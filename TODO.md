@@ -10,7 +10,7 @@ Last updated: 2026-06-22
 ---
 
 ## 1. Environment setup
-- [~] Confirm Python version on GPU machine (3.14 vs fallback to 3.12)
+- [~] Python version on GPU machine (3.14, fllback to 3.12)
 - [ ] Create venv on Arch GPU machine
 - [ ] Install PyTorch with correct CUDA build, verify `torch.cuda.is_available()`
 - [ ] Install remaining training deps (`requirements.txt`)
@@ -18,7 +18,7 @@ Last updated: 2026-06-22
 ## 2. Data
 - [ ] Download EyePACS / Kaggle Diabetic Retinopathy Detection dataset
 - [ ] Verify `train.csv` + `train_images/` structure matches script expectations
-- [ ] Sanity-check class distribution (expect heavy skew toward "No DR")
+- [ ] Sanity-check class distribution (heavy skew toward "No DR")
 
 ## 3. Model training
 - [x] Write `train.py` (EfficientNet-B0, transfer learning, class-weighted loss)
@@ -26,14 +26,14 @@ Last updated: 2026-06-22
 - [ ] Full run with fine-tuning unfreeze
 - [ ] Evaluate val accuracy / confusion matrix per class
 - [ ] Export to ONNX (`argus_model.onnx`) and verify it loads correctly outside PyTorch
-- [ ] (stretch) Try Inception-v3 backbone for comparison vs EfficientNet-B0
+- [ ] (stretch) Inception-v3 backbone for comparison vs EfficientNet-B0
 
 ## 4. Backend API (Django + Strawberry GraphQL)
 - [ ] Scaffold Django project + app
-- [ ] Add Strawberry GraphQL schema
+- [ ] Make Strawberry GraphQL schema
 - [ ] Implement `predict` mutation (image `Upload` scalar -> class + confidence)
 - [ ] Load ONNX model once at startup via `onnxruntime`, not per-request
-- [ ] Add basic image validation (size/format) before inference
+- [ ] Basic image validation (size/format) before inference
 - [ ] (stretch) Log predictions / uploads via Django admin for inspection
 
 ## 5. Mobile app (Expo / React Native / TypeScript)
@@ -44,16 +44,14 @@ Last updated: 2026-06-22
 - [ ] Basic styling / app branding (Argus name + icon)
 
 ## 6. Polish / wrap-up
-- [ ] Add clear in-app disclaimer (educational only, not a medical device)
-- [ ] Write up model performance limitations in README
-- [ ] (stretch) Try deploying API somewhere reachable from a real phone (not just localhost)
+- [ ] Clear in-app disclaimer (not a medical device)
+
 
 ---
 
 ## Notes / decisions log
-- Chose **EfficientNet-B0** over Inception-v3 for faster training, comparable accuracy.
-- Chose **Django + Strawberry GraphQL** over FastAPI/REST per preference, despite GraphQL
+- **EfficientNet-B0** over Inception-v3 for faster training, comparable accuracy.
+- **Django + Strawberry GraphQL** over REST per preference, despite GraphQL
   being a slight architectural mismatch for a single fixed-shape "upload image -> get
   prediction" operation. Upload handled via `Upload` scalar (multipart spec).
-- Model exported to **ONNX** specifically so the API server doesn't need PyTorch as a
-  runtime dependency, and to keep the door open for on-device mobile inference later.
+- Model exported to **ONNX** specifically so the API server doesn't need PyTorch as a runtime dependency, and to keep the door open for on-device mobile inference later.
