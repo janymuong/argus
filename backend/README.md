@@ -5,7 +5,7 @@
 ```bash
 cd backend
 python -m venv .argus_env
-source venv/bin/activate
+source .argus_env/bin/activate
 
 pip install -r requirements.txt
 ```
@@ -32,7 +32,7 @@ python manage.py runserver 0.0.0.0:8000
 `0.0.0.0` (not just `127.0.0.1`) so that phone running Expo on the same
 Wi-Fi network can reach it via machine's LAN IP.
 
-## Try it
+## Access:
 
 Visit `http://localhost:8000/graphql/` for the GraphiQL playground.
 
