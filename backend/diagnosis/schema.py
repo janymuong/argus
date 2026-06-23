@@ -12,7 +12,7 @@ multipart upload link/exchange that handles this automatically.
 """
 
 from io import BytesIO
-from typing import List
+from typing import Annotated, List, Union
 
 import strawberry
 from PIL import Image, UnidentifiedImageError
@@ -38,11 +38,12 @@ class PredictionResult:
 class PredictionError:
     message: str
 
+# PredictionResponse = strawberry.union("PredictionResponse")(PredictionResult | PredictionError)
+# PredictionResponse = Annotated[strawberry.union("PredictionResponse"), PredictionResult | PredictionError]
 
-PredictionResponse = strawberry.union(
-    "PredictionResponse", (PredictionResult, PredictionError)
-)
-
+PredictionResponse = Annotated[
+    Union[PredictionResult, PredictionError], strawberry.union("PredictionResponse")
+]
 
 @strawberry.type
 class Query:
