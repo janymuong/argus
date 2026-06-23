@@ -54,4 +54,3 @@ curl http://localhost:8000/graphql/ \
   bad uploads or a missing model file come back as a structured GraphQL
   error response rather than a 500.
 - CORS is wide open (`CORS_ALLOW_ALL_ORIGINS = True`) for local dev only.
-  Tighten this before any real deployment.
