@@ -1,21 +1,19 @@
-# Argus
+# argus
 
-Argus explores how AI-assisted diabetic retinopathy (DR) screening — the kind of work Google Health has pioneered — can be rebuilt from scratch, end to end: model training, API serving, and a mobile app.
+argus explores how AI-assisted diabetic retinopathy (DR) screening — the kind of work google health has pioneered — can be rebuilt from scratch, end to end: model training, api serving, and a mobile app.
 
-Diabetic retinopathy is damage to the retina's blood vessels caused by
-diabetes, and is a leading cause of preventable blindness worldwide. AI
-screening tools (CNNs trained on retinal fundus photos) have shown they can
+`diabetic retinopathy` is damage to the **retina's blood vessels caused by diabetes**, and is a leading cause of preventable blindness worldwide. ai
+screening tools (cnns trained on retinal fundus photos) have shown they can
 match or exceed specialist-level accuracy at detecting it, which is why
 they're being deployed in regions with few ophthalmologists.
 
-**This project is not a medical device and is not for clinical use.** It's a
-personal build of the full stack of training a real-world computer vision model and shipping it into a usable app.
+> DISCLAIMER: **at the moment this project is not a medical device and is not for clinical use.**
 
-## What it does
+## WHAT it DOES
 
-Given a retinal fundus photo, Argus predicts a DR severity grade:
+given a retinal fundus photo, argus predicts a DR severity grade:
 
-| Class | Meaning |
+| class | meaning |
 |-------|---------|
 | 0 | No DR |
 | 1 | Mild |
@@ -34,17 +32,17 @@ Given a retinal fundus photo, Argus predicts a DR severity grade:
 - **Mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
   to upload a photo and display the predicted grade + confidence.
 
-## Project layout
+## structure/layout
 
 ```
 argus/
 ├── model/              # training script, requirements, checkpoints/
-├── backend/            # Django + Strawberry GraphQL backend
-├── app/                # Expo / React Native / TypeScript mobile app
+├── backend/            # django + strawberry graphQL backend
+├── argus-gui/          # expo / react native / typescript mobile app/frontend
 ├── README.md
 └── TODO.md
 ```
 
-## Status
+## status
 
-Early stage — see `TODO.md` for current progress and next steps.
+early stage — see `TODO.md` for current progress and next steps.
