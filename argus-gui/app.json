@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Argus",
+    "slug": "argus-gui",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Argus needs camera access to capture fundus photos.",
+        "NSPhotoLibraryUsageDescription": "Argus needs photo library access to select fundus photos."
+      }
+    },
+    "android": {
+      "package": "com.argus.app",
+      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"]
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Argus needs photo library access to select fundus photos.",
+          "cameraPermission": "Argus needs camera access to capture fundus photos."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:8000/graphql/"
+    }
+  }
+}
