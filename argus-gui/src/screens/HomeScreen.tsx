@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Button,
-  Image,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
+import { View, Text, ActivityIndicator, ScrollView, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import Logo from "../components/Logo";
+import AppButton from "../components/AppButton";
+import { homeStyles as styles } from "./HomeScreen.styles";
 import {
   runPrediction,
   PredictResponse,
@@ -80,33 +75,41 @@ export default function HomeScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Argus</Text>
+      <View style={styles.logoRow}>
+        <Logo />
+      </View>
       <Text style={styles.subtitle}>
-        Diabetic retinopathy screening — educational demo, not a diagnosis.
+        Diabetic retinopathy screening
       </Text>
 
       {imageUri && (
         <Image source={{ uri: imageUri }} style={styles.preview} />
       )}
 
-      {/* Before an image is picked: show source choices.
-          After an image is picked: show Analyze + a way back. */}
       {!imageUri ? (
         <>
           <View style={styles.buttonRow}>
-            <Button title="Pick from Gallery" onPress={pickFromGallery} />
+            <AppButton title="Pick from gallery" onPress={pickFromGallery} />
           </View>
           <View style={styles.buttonRow}>
-            <Button title="Capture with Camera" onPress={captureFromCamera} />
+            <AppButton
+              title="Capture with camera"
+              variant="secondary"
+              onPress={captureFromCamera}
+            />
           </View>
         </>
       ) : (
         <>
           <View style={styles.buttonRow}>
-            <Button title="Analyze" onPress={analyze} disabled={loading} />
+            <AppButton title="Analyze" onPress={analyze} disabled={loading} />
           </View>
           <View style={styles.buttonRow}>
-            <Button title="Choose a Different Image" onPress={reset} />
+            <AppButton
+              title="Choose a different image"
+              variant="ghost"
+              onPress={reset}
+            />
           </View>
         </>
       )}
@@ -116,17 +119,18 @@ export default function HomeScreen() {
       {result && result.__typename === "PredictionResult" && (
         <View style={styles.resultBox}>
           <Text style={styles.resultLabel}>
-            Predicted: {(result as PredictionResult).predictedClass}
+            {(result as PredictionResult).predictedClass}
           </Text>
           <Text>
             Confidence:{" "}
             {((result as PredictionResult).confidence * 100).toFixed(1)}%
           </Text>
-          <Text style={styles.breakdownTitle}>Full breakdown:</Text>
+          <Text style={styles.breakdownTitle}>Full breakdown</Text>
           {(result as PredictionResult).allProbabilities.map((p) => (
-            <Text key={p.label}>
-              {p.label}: {(p.probability * 100).toFixed(1)}%
-            </Text>
+            <View key={p.label} style={styles.resultRow}>
+              <Text>{p.label}</Text>
+              <Text>{(p.probability * 100).toFixed(1)}%</Text>
+            </View>
           ))}
         </View>
       )}
@@ -138,38 +142,13 @@ export default function HomeScreen() {
           </Text>
         </View>
       )}
+
+      <View style={styles.disclaimerBox}>
+        <Text style={styles.disclaimerText}>
+          Argus is a personal learning project, not a certified medical
+          device. DO NOT use it to make real clinical decisions.
+        </Text>
+      </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: "center",
-    padding: 24,
-    paddingTop: 64,
-    gap: 12,
-  },
-  title: { fontSize: 32, fontWeight: "700" },
-  subtitle: { textAlign: "center", color: "#666", marginBottom: 12 },
-  preview: { width: 260, height: 260, borderRadius: 12, marginVertical: 12 },
-  buttonRow: { marginVertical: 6 },
-  spacer: { marginVertical: 16 },
-  resultBox: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: "#f0f4f8",
-    width: "100%",
-  },
-  resultLabel: { fontSize: 18, fontWeight: "600", marginBottom: 4 },
-  breakdownTitle: { marginTop: 10, fontWeight: "600" },
-  errorBox: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: "#fdecea",
-    width: "100%",
-  },
-  errorText: { color: "#a33" },
-});

@@ -1,0 +1,51 @@
+<svg width="220" height="64" viewBox="0 0 220 64" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Argus</title>
+  <desc>An eagle head facing right, with a sharp eye, beside the lowercase wordmark "argus".</desc>
+
+  <!-- Eagle head + eye mark -->
+  <g transform="translate(2,2)">
+    <!-- head shape: simplified eagle head/beak silhouette -->
+    <path
+      d="M30 4
+         C42 4 52 12 56 22
+         C58 27 57 32 53 35
+         L44 41
+         C46 45 45 49 41 51
+         L33 55
+         C28 57 22 56 18 52
+         C10 47 5 38 6 28
+         C7 16 17 5 30 4 Z"
+      fill="#1f6f78"
+    />
+    <!-- beak -->
+    <path
+      d="M53 35 L60 33 L54 40 Z"
+      fill="#e8a23c"
+    />
+    <!-- eye outer -->
+    <circle cx="32" cy="24" r="10" fill="#fdf6ec" />
+    <!-- eye iris -->
+    <circle cx="33" cy="24" r="6" fill="#1a1a1a" />
+    <!-- eye highlight -->
+    <circle cx="35.5" cy="21.5" r="1.6" fill="#fdf6ec" />
+    <!-- brow accent -->
+    <path
+      d="M22 15 C27 11 36 11 41 15"
+      stroke="#0f4a50"
+      stroke-width="2.5"
+      fill="none"
+      stroke-linecap="round"
+    />
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="78"
+    y="42"
+    font-family="'Avenir Next', 'Helvetica Neue', Arial, sans-serif"
+    font-size="30"
+    font-weight="600"
+    letter-spacing="0.5"
+    fill="#1f2937"
+  >argus</text>
+</svg>
