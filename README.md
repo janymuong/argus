@@ -1,4 +1,4 @@
-# argus
+# <img src="./argus-gui/assets/argus-logo.svg" height="64" style="vertical-align: middle; margin-right: 1px;">
 
 argus explores how AI-assisted diabetic retinopathy (DR) screening — the kind of work google health has pioneered — can be rebuilt from scratch, end to end: model training, api serving, and a mobile app.
 
@@ -7,29 +7,29 @@ screening tools (cnns trained on retinal fundus photos) have shown they can
 match or exceed specialist-level accuracy at detecting it, which is why
 they're being deployed in regions with few ophthalmologists.
 
-> DISCLAIMER: **at the moment this project is not a medical device and is not for clinical use.**
+> disclaimer: **at the moment this project is not a medical device and is not for clinical use.**
 
-## WHAT it DOES
+## what it does:
 
 given a retinal fundus photo, argus predicts a DR severity grade:
 
 | class | meaning |
 |-------|---------|
-| 0 | No DR |
-| 1 | Mild |
-| 2 | Moderate |
-| 3 | Severe |
-| 4 | Proliferative DR |
+| 0 | no dr |
+| 1 | mild |
+| 2 | moderate |
+| 3 | severe |
+| 4 | proliferative dr |
 
-## Stack
+## stack
 
-- **Model:** PyTorch, EfficientNet-B0 backbone (ImageNet-pretrained),
+- **model:** PyTorch, EfficientNet-B0 backbone (ImageNet-pretrained),
   fine-tuned on the EyePACS/Kaggle Diabetic Retinopathy Detection dataset.
   Exported to ONNX for serving.
-- **Training environment:** Arch Linux, GPU-accelerated, Python venv.
+- **training environment:** Arch Linux, GPU-accelerated, Python venv.
 - **API:** Django + Strawberry GraphQL, serving predictions via a single
   `predict` mutation that accepts an image upload.
-- **Mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
+- **mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
   to upload a photo and display the predicted grade + confidence.
 
 ## structure/layout
