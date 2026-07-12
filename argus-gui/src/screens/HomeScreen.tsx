@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ActivityIndicator, ScrollView, Image } from "react-native";
+import { Platform, View, Text, ActivityIndicator, ScrollView, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Logo from "../components/Logo";
 import AppButton from "../components/AppButton";
@@ -35,6 +35,11 @@ export default function HomeScreen() {
   };
 
   const captureFromCamera = async () => {
+    if (Platform.OS === "web") {
+      alert("Camera capture is not available in the browser yet.");
+      return;
+    }
+
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
       alert("Camera permission is required.");
@@ -74,80 +79,110 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.logoRow}>
-        <Logo />
-      </View>
-      <Text style={styles.subtitle}>
-        Diabetic retinopathy screening
-      </Text>
-
-      {imageUri && (
-        <Image source={{ uri: imageUri }} style={styles.preview} />
-      )}
-
-      {!imageUri ? (
-        <>
-          <View style={styles.buttonRow}>
-            <AppButton title="Pick from gallery" onPress={pickFromGallery} />
+    <ScrollView contentContainerStyle={styles.page}>
+      <View style={styles.shell}>
+        <View style={styles.heroCard}>
+          <View style={styles.logoRow}>
+            <Logo />
           </View>
-          <View style={styles.buttonRow}>
-            <AppButton
-              title="Capture with camera"
-              variant="secondary"
-              onPress={captureFromCamera}
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          <View style={styles.buttonRow}>
-            <AppButton title="Analyze" onPress={analyze} disabled={loading} />
-          </View>
-          <View style={styles.buttonRow}>
-            <AppButton
-              title="Choose a different image"
-              variant="ghost"
-              onPress={reset}
-            />
-          </View>
-        </>
-      )}
-
-      {loading && <ActivityIndicator style={styles.spacer} />}
-
-      {result && result.__typename === "PredictionResult" && (
-        <View style={styles.resultBox}>
-          <Text style={styles.resultLabel}>
-            {(result as PredictionResult).predictedClass}
+          <Text style={styles.heroEyebrow}>Argus MCP:</Text>
+          <Text style={styles.heroTitle}>
+            Retinal screening in a user facing application(GUI), a backend service, and all of it wrapped within an MCP.
           </Text>
-          <Text>
-            Confidence:{" "}
-            {((result as PredictionResult).confidence * 100).toFixed(1)}%
+          <Text style={styles.heroCopy}>
+            Pick a fundus image, run the model, and argus predicts a DR severity grade for you.
           </Text>
-          <Text style={styles.breakdownTitle}>Full breakdown</Text>
-          {(result as PredictionResult).allProbabilities.map((p) => (
-            <View key={p.label} style={styles.resultRow}>
-              <Text>{p.label}</Text>
-              <Text>{(p.probability * 100).toFixed(1)}%</Text>
+          <View style={styles.statRow}>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Backend</Text>
+              <Text style={styles.statValue}>GraphQL upload</Text>
             </View>
-          ))}
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Protocol</Text>
+              <Text style={styles.statValue}>MCP tool bridge</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Frontend</Text>
+              <Text style={styles.statValue}>Expo web-ready</Text>
+            </View>
+          </View>
         </View>
-      )}
 
-      {result && result.__typename === "PredictionError" && (
-        <View style={styles.errorBox}>
-          <Text style={styles.errorText}>
-            {(result as PredictionError).message}
-          </Text>
+        <View style={styles.workspaceCard}>
+          <Text style={styles.sectionTitle}>Screening workspace</Text>
+
+          <View style={styles.workspaceFrame}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.preview} />
+            ) : (
+              <View style={styles.emptyPreview}>
+                <Text style={styles.emptyPreviewTitle}>No image selected</Text>
+                <Text style={styles.emptyPreviewCopy}>
+                  Pick a fundus photo to run Argus screening.
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {!imageUri ? (
+            <View style={styles.actionStack}>
+              <AppButton title="Choose from gallery" onPress={pickFromGallery} />
+              {Platform.OS !== "web" && (
+                <AppButton
+                  title="Capture with camera"
+                  variant="secondary"
+                  onPress={captureFromCamera}
+                />
+              )}
+            </View>
+          ) : (
+            <View style={styles.actionStack}>
+              <AppButton title="Run screening" onPress={analyze} disabled={loading} />
+              <AppButton
+                title="Choose a different image"
+                variant="ghost"
+                onPress={reset}
+              />
+            </View>
+          )}
+
+          {loading && <ActivityIndicator style={styles.loading} />}
+
+          {result && result.__typename === "PredictionResult" && (
+            <View style={styles.resultBox}>
+              <Text style={styles.resultLabel}>
+                {(result as PredictionResult).predictedClass}
+              </Text>
+              <Text style={styles.resultConfidence}>
+                Confidence {((result as PredictionResult).confidence * 100).toFixed(1)}%
+              </Text>
+              <Text style={styles.breakdownTitle}>Full breakdown</Text>
+              {(result as PredictionResult).allProbabilities.map((p) => (
+                <View key={p.label} style={styles.resultRow}>
+                  <Text style={styles.resultName}>{p.label}</Text>
+                  <Text style={styles.resultScore}>
+                    {(p.probability * 100).toFixed(1)}%
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {result && result.__typename === "PredictionError" && (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>
+                {(result as PredictionError).message}
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.disclaimerBox}>
+            <Text style={styles.disclaimerText}>
+              Argus is an personal educative project, not a certified medical
+              device. DO NOT use it to make real clinical decisions.
+            </Text>
+          </View>
         </View>
-      )}
-
-      <View style={styles.disclaimerBox}>
-        <Text style={styles.disclaimerText}>
-          Argus is a personal learning project, not a certified medical
-          device. DO NOT use it to make real clinical decisions.
-        </Text>
       </View>
     </ScrollView>
   );
