@@ -8,7 +8,7 @@ upload exchange, and displays the predicted severity grade.
 ```bash
 cd argus-gui
 bun install
-bunx expo install expo-image-picker expo-status-bar
+yarn expo install expo-image-picker expo-status-bar
 ```
 > **NOTE**: (`expo install`, not plain `bun install`, for Expo packages — it pulls the
 exact patch versions compatible with your installed Expo SDK / Expo Go
@@ -20,20 +20,20 @@ The backend host is read from an env var at start time, so your IP never
 ends up in source control:
 
 ```bash
-EXPO_PUBLIC_BACKEND_HOST=192.168.x.xyz bunx expo start
+EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz yarn expo start
 ```
 
 Optionally override the port too (defaults to 8000):
 
 ```bash
-EXPO_PUBLIC_BACKEND_HOST=192.168.x.xyz EXPO_PUBLIC_BACKEND_PORT=8000 bunx expo start
+EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz EXPO_PUBLIC_BACKEND_PORT=8000 yarn expo start
 ```
 
 Find your LAN IP:
 
 ```bash
 # linux:
-hostname  hostname --ip-addresses # or ip addr show | grep "inet "
+hostname --ip-addresses # or ip addr show | grep "inet "
 
 # or windowns:
 ipconfig
@@ -51,7 +51,7 @@ And that your phone and dev machine are on the **same Wi-Fi network**.
 ## Run it
 
 ```bash
-bunx expo start
+yarn expo start # or bunx expo start/what you have
 ```
 
 Scan the QR code with Expo Go (Android) or the Camera app (iOS).
