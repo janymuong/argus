@@ -10,6 +10,7 @@
 
 const BACKEND_HOST = process.env.EXPO_PUBLIC_BACKEND_HOST || "localhost";
 const BACKEND_PORT = process.env.EXPO_PUBLIC_BACKEND_PORT || "8000";
+const isWeb = typeof window !== "undefined";
 
 export const API_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/graphql/`;
 
@@ -63,13 +64,18 @@ export async function runPrediction(imageUri: string): Promise<PredictResponse> 
   );
   formData.append("map", JSON.stringify({ "0": ["variables.file"] }));
 
-  // React Native's FormData accepts this {uri, name, type} shape directly —
-  // no Blob conversion needed on RN.
-  formData.append("0", {
-    uri: imageUri,
-    name: "fundus.jpg",
-    type: "image/jpeg",
-  } as any);
+  if (isWeb) {
+    const response = await fetch(imageUri);
+    const blob = await response.blob();
+    formData.append("0", blob, "fundus.jpg");
+  } else {
+    // react native's FormData accepts this {uri, name, type} shape directly.
+    formData.append("0", {
+      uri: imageUri,
+      name: "fundus.jpg",
+      type: "image/jpeg",
+    } as any);
+  }
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -83,9 +89,12 @@ export async function runPrediction(imageUri: string): Promise<PredictResponse> 
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
     return {
       __typename: "PredictionError",
-      message: `Server returned ${response.status}`,
+      message: errorText
+        ? `Server returned ${response.status}: ${errorText}`
+        : `Server returned ${response.status}`,
     };
   }
 
