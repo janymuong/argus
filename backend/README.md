@@ -3,7 +3,6 @@
 ## Setup
 
 ```bash
-cd backend
 python -m venv .argus_env
 source .argus_env/bin/activate
 
@@ -25,8 +24,15 @@ pip install -r requirements.txt
 ## Run it
 
 ```bash
+# cd backend
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
+```
+
+If you want the full demo stack, run the root launcher instead:
+
+```bash
+python ../run-argus.py
 ```
 
 `0.0.0.0` (not just `127.0.0.1`) so that phone running Expo on the same
