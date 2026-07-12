@@ -1,0 +1,15 @@
+[project]
+name = "mcp-project"
+version = "0.1.0"
+description = "Creating AI agents with MCP"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "anthropic>=0.52.2",
+    "arxiv>=2.2.0",
+    "mcp>=1.9.2",
+    "nest-asyncio>=1.6.0",
+    "openai>=1.84.0",
+    "python-dotenv>=1.1.0",
+    "rich>=14.0.0",
+]
