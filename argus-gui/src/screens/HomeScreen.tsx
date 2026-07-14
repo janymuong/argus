@@ -178,7 +178,7 @@ export default function HomeScreen() {
 
           <View style={styles.disclaimerBox}>
             <Text style={styles.disclaimerText}>
-              Argus is an personal educative project, not a certified medical
+              Argus is an educative personal project, not a certified medical
               device. DO NOT use it to make real clinical decisions.
             </Text>
           </View>
