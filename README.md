@@ -23,70 +23,52 @@ given a retinal fundus photo, argus predicts a DR severity grade:
 
 ## stack
 
-- **model:** PyTorch, EfficientNet-B0 backbone (ImageNet-pretrained),
+- **Model:** PyTorch, EfficientNet-B0 backbone (ImageNet-pretrained),
   fine-tuned on the EyePACS/Kaggle Diabetic Retinopathy Detection dataset.
   Exported to ONNX for serving.
-- **training environment:** Arch Linux, GPU-accelerated, Python venv.
+- **Training Environment:** Arch Linux, GPU-accelerated, Python venv.
 - **API:** Django + Strawberry GraphQL, serving predictions via a single
   `predict` mutation that accepts an image upload.
-- **mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
+- **Mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
   to upload a photo and display the predicted grade + confidence.
 
 ## MCP integration
 
-- **research MCP server:** wraps arXiv search and paper extraction tools.
+- **Research MCP server:** wraps arXiv search and paper extraction tools.
 - **Argus prediction MCP tool:** exposes the same retinal screening flow through
   `predict_retina_image(image_path)` so an MCP client can call the model as a
   tool instead of going through the UI.
-- The backend stays GraphQL-first, which keeps the mobile/web app and the MCP
+- the backend stays GraphQL-first, which keeps the mobile/web app and the MCP
   story aligned instead of splitting the inference logic across separate stacks.
 
-## web direction
-
-- The Expo app already runs on web, and the home screen is being reshaped into
-  a centered, card-based layout so it reads like a demo app on desktop as well
-  as mobile.
-
-## one-command dev
-
-From the repo root you can start the backend and Expo web frontend with a
-single command:
+## one-command run:
 
 ```bash
-python dev.py
+python run-argus.py # do within the root directory
 ```
-
-That script runs Django migrations first, then starts:
-- `backend/` with `python manage.py runserver 0.0.0.0:8000`
-- `argus-gui/` with `yarn expo start --web`
-
-The backend and MCP code still share one Python environment at the repo root:
-`.argus_env`. Run the MCP agent separately when you want the tool-calling demo.
 
 ## environment variables
 
-Put shared secrets and local dev overrides in a single root file:
+put shared secrets and local dev overrides in a single root file:
 
 ```bash
 ./.env
 ```
 
-Suggested entries:
+suggested entries:
 
 ```bash
 OPENAI_API_KEY=your_key_here
 ARGUS_GRAPHQL_URL=http://127.0.0.1:8000/graphql/
 ```
 
-The MCP client and server load that root `.env` directly. Django can also read
-the same variables from the shell if you export them before launching.
 
 ## structure/layout
 
 ```
 argus/
 ├── model/              # training script, requirements, checkpoints/
-├── backend/            # django + strawberry graphQL backend
+├── backend/            # django + strawberry graphql backend
 ├── argus-gui/          # expo / react native / typescript mobile app/frontend
 ├── README.md
 └── TODO.md
