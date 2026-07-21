@@ -38,13 +38,11 @@ given a retinal fundus photo, argus predicts a DR severity grade:
 - **Argus prediction MCP tool:** exposes the same retinal screening flow through
   `predict_retina_image(image_path)` so an MCP client can call the model as a
   tool instead of going through the UI.
-- the backend stays GraphQL-first, which keeps the mobile/web app and the MCP
-  story aligned instead of splitting the inference logic across separate stacks.
 
 ## one-command run:
 
 ```bash
-python run-argus.py # do within the root directory
+./run-argus.py # do within the root directory
 ```
 
 ## environment variables
