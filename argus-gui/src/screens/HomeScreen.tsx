@@ -85,12 +85,12 @@ export default function HomeScreen() {
           <View style={styles.logoRow}>
             <Logo />
           </View>
-          <Text style={styles.heroEyebrow}>Argus MCP:</Text>
+          {/* <Text style={styles.heroEyebrow}>Argus MCP:</Text>  */}
           <Text style={styles.heroTitle}>
-            Retinal screening in a user facing application(GUI), a backend service, and all of it wrapped within an MCP.
+            Retinal Screening:
           </Text>
           <Text style={styles.heroCopy}>
-            Pick a fundus image, run the model, and argus predicts a DR severity grade for you.
+            Pick a fundus image, and argus predicts a DR severity grade for you.
           </Text>
           <View style={styles.statRow}>
             <View style={styles.statCard}>
@@ -103,7 +103,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statLabel}>Frontend</Text>
-              <Text style={styles.statValue}>Expo web-ready</Text>
+              <Text style={styles.statValue}>Expo mobile and web-ready</Text>
             </View>
           </View>
         </View>
@@ -178,8 +178,7 @@ export default function HomeScreen() {
 
           <View style={styles.disclaimerBox}>
             <Text style={styles.disclaimerText}>
-              Argus is an educative personal project, not a certified medical
-              device. DO NOT use it to make real clinical decisions.
+              Argus is not a certified medical device. DO NOT use it to make real clinical decisions.
             </Text>
           </View>
         </View>
