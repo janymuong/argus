@@ -30,7 +30,7 @@ def start_process(label: str, command: list[str], cwd: Path, env: dict[str, str]
 
 
 def expo_web_command() -> list[str]:
-    return ["yarn", "expo", "start", "--web"]
+    return ["bun", "expo", "start", "--web"]
 
 
 def main() -> int:

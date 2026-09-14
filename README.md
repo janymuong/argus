@@ -27,10 +27,8 @@ given a retinal fundus photo, argus predicts a DR severity grade:
   fine-tuned on the EyePACS/Kaggle Diabetic Retinopathy Detection dataset.
   Exported to ONNX for serving.
 - **Training Environment:** Arch Linux, GPU-accelerated, Python venv.
-- **API:** Django + Strawberry GraphQL, serving predictions via a single
-  `predict` mutation that accepts an image upload.
-- **Mobile app:** React Native (Expo), TypeScript, calling the GraphQL API
-  to upload a photo and display the predicted grade + confidence.
+- **API:** Django + Strawberry GraphQL, with a custom role-based user model and JWT authentication; the `predict` mutation accepts an image upload and is restricted server-side to clinicians.
+- **Mobile app:** React Native (Expo), TypeScript, with Login/Register screens, SecureStore-backed auth state, role-aware navigation, and GraphQL image upload.
 
 ## MCP integration
 
