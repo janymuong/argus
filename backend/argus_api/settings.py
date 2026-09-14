@@ -1,16 +1,12 @@
-"""
-Django settings for Argus backend (local dev).
-"""
+"""Django settings for Argus backend (local dev)."""
 
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "dev-only-not-secure-change-before-any-real-deployment"
-
 DEBUG = True
-
-ALLOWED_HOSTS = ["*"]  # local dev only — tighten before any real deployment
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -20,7 +16,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "strawberry_django",
+    "accounts",
     "diagnosis",
 ]
 
@@ -31,6 +30,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "argus_api.middleware.JWTAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -62,22 +62,32 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "accounts.User"
+
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": __import__("datetime").timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": __import__("datetime").timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
 STATIC_URL = "static/"
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CORS_ALLOW_ALL_ORIGINS = True
 
-# --- CORS: local dev only, allow Expo dev server / any LAN device --- #
-CORS_ALLOW_ALL_ORIGINS = True  # fine for local dev; restrict before any real deployment
-
-# --- Argus-specific settings --- #
 ARGUS_MODEL_PATH = BASE_DIR.parent / "model" / "checkpoints" / "argus_model.onnx"
 ARGUS_CLASS_NAMES = ["No DR", "Mild", "Moderate", "Severe", "Proliferative DR"]
 ARGUS_IMG_SIZE = 224
-
-# Max upload size for fundus images (10 MB)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
