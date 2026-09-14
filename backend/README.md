@@ -23,11 +23,21 @@ pip install -r requirements.txt
 
 ## Run it
 
+Because Argus now uses a custom `accounts.User` model, start from a fresh local
+SQLite database when upgrading an existing checkout that used Django's default
+user model:
+
 ```bash
 # cd backend
+rm -f db.sqlite3
+python manage.py makemigrations accounts
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
+
+The repository includes the initial `accounts` migration, so `makemigrations`
+should normally report no model changes. It is kept in the command sequence as
+a useful sanity check after changing the user model.
 
 If you want the full demo stack, run the root launcher instead:
 
@@ -37,6 +47,19 @@ python ../run-argus.py
 
 `0.0.0.0` (not just `127.0.0.1`) so that phone running Expo on the same
 Wi-Fi network can reach it via machine's LAN IP.
+
+## Authentication
+
+The GraphQL endpoint now provides:
+
+- `register(username, password, email, role)` — creates a Patient, Clinician, or Admin account and returns access + refresh JWTs.
+- `login(username, password)` — returns access + refresh JWTs.
+- `me` — returns the current user when an `Authorization: Bearer <access-token>` header is present.
+- `logout(refreshToken)` — blacklists the refresh token.
+- `predict(image)` — requires an authenticated **Clinician**; the role check is enforced server-side.
+
+The frontend stores tokens with Expo SecureStore on native platforms and uses
+`localStorage` for Expo web.
 
 ## Access:
 
