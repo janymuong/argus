@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import Logo from "../components/Logo";
 import AppButton from "../components/AppButton";
 import { homeStyles as styles } from "./HomeScreen.styles";
+import { useAuth } from "../context/AuthContext";
 import {
   runPrediction,
   PredictResponse,
@@ -12,6 +13,7 @@ import {
 } from "../graphql/predict";
 
 export default function HomeScreen() {
+  const { user, accessToken } = useAuth();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [result, setResult] = useState<PredictResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,7 +68,11 @@ export default function HomeScreen() {
     if (!imageUri) return;
     setLoading(true);
     try {
-      const response = await runPrediction(imageUri);
+      if (!accessToken) {
+        setResult({ __typename: "PredictionError", message: "Your session has expired. Please sign in again." });
+        return;
+      }
+      const response = await runPrediction(imageUri, accessToken);
       setResult(response);
     } catch (err: any) {
       setResult({
@@ -77,6 +83,27 @@ export default function HomeScreen() {
       setLoading(false);
     }
   };
+
+  if (user?.role !== "CLINICIAN") {
+    return (
+      <ScrollView contentContainerStyle={styles.page}>
+        <View style={styles.shell}>
+          <View style={styles.workspaceCard}>
+            <Text style={styles.sectionTitle}>Prediction access</Text>
+            <Text style={styles.resultLabel}>Clinician access required</Text>
+            <Text style={styles.emptyPreviewCopy}>
+              Your account is signed in as {user?.role.toLowerCase()}. Only clinician accounts can submit retinal images for Argus prediction.
+            </Text>
+            <View style={styles.disclaimerBox}>
+              <Text style={styles.disclaimerText}>
+                Argus predictions are decision-support outputs and are not a substitute for professional clinical judgment.
+              </Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.page}>
