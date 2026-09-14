@@ -52,7 +52,7 @@ export type PredictResponse = PredictionResult | PredictionError;
  * multipart request spec directly, bypassing any client library's
  * automatic (and on RN, unreliable) file extraction.
  */
-export async function runPrediction(imageUri: string): Promise<PredictResponse> {
+export async function runPrediction(imageUri: string, accessToken: string): Promise<PredictResponse> {
   const formData = new FormData();
 
   formData.append(
@@ -82,6 +82,7 @@ export async function runPrediction(imageUri: string): Promise<PredictResponse> 
     body: formData,
     headers: {
       Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
       // Deliberately NOT setting Content-Type — fetch sets the correct
       // multipart boundary automatically when body is a FormData instance.
       // Setting it manually here breaks the boundary.
