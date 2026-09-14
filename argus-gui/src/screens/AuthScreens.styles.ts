@@ -1,0 +1,56 @@
+import { StyleSheet } from "react-native";
+import { colors, radii, spacing, typography } from "../theme/tokens";
+
+export const authStyles = StyleSheet.create({
+  page: {
+    flexGrow: 1,
+    backgroundColor: colors.background,
+    justifyContent: "center",
+    padding: spacing.lg,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 480,
+    alignSelf: "center",
+    backgroundColor: colors.surface,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  logoRow: { alignSelf: "center", marginBottom: spacing.sm },
+  title: { ...typography.title, color: colors.textPrimary, textAlign: "center" },
+  subtitle: { color: colors.textSecondary, lineHeight: 21, textAlign: "center" },
+  label: { color: colors.textPrimary, fontWeight: "600", marginBottom: spacing.xs },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 12,
+    color: colors.textPrimary,
+  },
+  field: { gap: spacing.xs },
+  roleRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
+  roleChip: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 9,
+    backgroundColor: colors.surfaceMuted,
+  },
+  roleChipSelected: { borderColor: colors.accent, backgroundColor: colors.accent },
+  roleText: { color: colors.textPrimary, fontWeight: "600" },
+  roleTextSelected: { color: colors.textOnPrimary },
+  error: {
+    backgroundColor: colors.errorBg,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
+  errorText: { color: colors.error, lineHeight: 20 },
+  footer: { textAlign: "center", color: colors.textSecondary, marginTop: spacing.xs },
+  link: { color: colors.accent, fontWeight: "700" },
+});
