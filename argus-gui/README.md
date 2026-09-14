@@ -20,39 +20,16 @@ The backend host is read from an env var at start time, so your IP never
 ends up in source control:
 
 ```bash
-EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz yarn expo start
+EXPO_PUBLIC_BACKEND_HOST=$(hostname --ip-addresses) bunx expo start 
+# EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz bun expo start
 ```
 
 Optionally override the port too (defaults to 8000):
 
 ```bash
-EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz EXPO_PUBLIC_BACKEND_PORT=8000 yarn expo start
+EXPO_PUBLIC_BACKEND_HOST=abc.def.x.xyz EXPO_PUBLIC_BACKEND_PORT=8000 bun expo start
 ```
 
-Find your LAN IP:
-
-```bash
-# linux:
-hostname --ip-addresses # or ip addr show | grep "inet "
-
-# or windowns:
-ipconfig
-```
-
-
-Also make sure Django is listening on all interfaces, not just localhost:
-
-```bash
-python manage.py runserver 0.0.0.0:8000
-```
-
-And that your phone and dev machine are on the **same Wi-Fi network**.
-
-## Run it
-
-```bash
-yarn expo start # or bunx expo start/what you have
-```
 
 Scan the QR code with Expo Go (Android) or the Camera app (iOS).
 
