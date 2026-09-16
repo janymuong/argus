@@ -1,5 +1,13 @@
-import React, { useState } from "react";
-import { Platform, View, Text, ActivityIndicator, ScrollView, Image } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Platform,
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+  Animated,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Logo from "../components/Logo";
 import AppButton from "../components/AppButton";
@@ -14,6 +22,31 @@ import {
 
 export default function HomeScreen() {
   const { user, accessToken } = useAuth();
+
+  const pulse = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
+  }, [pulse]);
+
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [result, setResult] = useState<PredictResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -85,18 +118,80 @@ export default function HomeScreen() {
   };
 
   if (user?.role !== "CLINICIAN") {
+    const orbScale = pulse.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 1.12],
+    });
+
+    const orbOpacity = pulse.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.65, 1],
+    });
+
     return (
       <ScrollView contentContainerStyle={styles.page}>
         <View style={styles.shell}>
-          <View style={styles.workspaceCard}>
-            <Text style={styles.sectionTitle}>Prediction access</Text>
-            <Text style={styles.resultLabel}>Clinician access required</Text>
-            <Text style={styles.emptyPreviewCopy}>
-              Your account is signed in as {user?.role.toLowerCase()}. Only clinician accounts can submit retinal images for Argus prediction.
+          <View style={styles.patientCard}>
+            <View style={styles.patientOrbArea}>
+              <Animated.View
+                style={[
+                  styles.patientOrbGlow,
+                  {
+                    transform: [{ scale: orbScale }],
+                    opacity: orbOpacity,
+                  },
+                ]}
+              />
+
+              <View style={styles.patientOrb}>
+                <Text style={styles.patientOrbText}>A</Text>
+              </View>
+            </View>
+
+            <Text style={styles.patientEyebrow}>
+              ARGUS ASSISTANT
             </Text>
+
+            <Text style={styles.patientTitle}>
+              Your retinal screening starts with your clinician
+            </Text>
+
+            <Text style={styles.patientCopy}>
+              Argus helps clinicians analyze retinal images and provides
+              decision-support information that can support a professional
+              eye examination.
+            </Text>
+
+            <View style={styles.patientInfoCard}>
+              <Text style={styles.patientInfoTitle}>
+                What happens next?
+              </Text>
+
+              <Text style={styles.patientInfoItem}>
+                • Your clinician captures or selects a retinal image.
+              </Text>
+
+              <Text style={styles.patientInfoItem}>
+                • Argus analyzes the image for diabetic retinopathy severity.
+              </Text>
+
+              <Text style={styles.patientInfoItem}>
+                • Your clinician reviews the result and discusses it with you.
+              </Text>
+            </View>
+
+            <View style={styles.patientStatus}>
+              <View style={styles.patientStatusDot} />
+
+              <Text style={styles.patientStatusText}>
+                Argus is ready when your clinician is ready.
+              </Text>
+            </View>
+
             <View style={styles.disclaimerBox}>
               <Text style={styles.disclaimerText}>
-                Argus predictions are decision-support outputs and are not a substitute for professional clinical judgment.
+                Argus predictions are decision-support outputs and are not a
+                substitute for professional clinical judgment.
               </Text>
             </View>
           </View>
