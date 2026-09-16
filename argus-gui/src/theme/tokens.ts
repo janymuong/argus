@@ -1,34 +1,39 @@
 /**
- * Argus design tokens.
+ * Argus clinical design tokens.
  *
- * Keeping color/spacing values here (rather than inline in each
- * StyleSheet) means a future re-theme is a one-file change, and the
- * eagle-eye teal in the logo has a matching home in the UI palette.
+ * Dark clinical interface:
+ * - Deep navy/teal application background
+ * - Elevated clinical surfaces
+ * - High-contrast typography
+ * - Teal for system/AI activity
+ * - Gold reserved for important attention states
+ * - Green reserved for successful/positive states
  */
 
 export const colors = {
-  // Brand
-  primary: "#1f6f78", // deep teal, matches the eagle head in the logo
-  primaryDark: "#0f4a50",
-  accent: "#e8a23c", // beak gold, used sparingly for emphasis
+  // Brand / clinical primary
+  primary: "#2A9DA6",
+  primaryDark: "#0B252B",
+  accent: "#E8A23C",
 
   // Surfaces
-  background: "#fafafa",
-  surface: "#ffffff",
-  surfaceMuted: "#f0f4f4",
+  background: "#071317",
+  surface: "#0D1D22",
+  surfaceMuted: "#12272D",
 
   // Text
-  textPrimary: "#1f2937",
-  textSecondary: "#6b7280",
-  textOnPrimary: "#ffffff",
+  textPrimary: "#E8F1F2",
+  textSecondary: "#8FA7AC",
+  textOnPrimary: "#FFFFFF",
 
   // Feedback
-  success: "#2f855a",
-  successBg: "#eafaf0",
-  error: "#a33333",
-  errorBg: "#fdecea",
+  success: "#43B581",
+  successBg: "#102D27",
 
-  border: "#e2e8e8",
+  error: "#E56B6F",
+  errorBg: "#321A1D",
+
+  border: "#244148",
 };
 
 export const spacing = {
@@ -47,8 +52,23 @@ export const radii = {
 };
 
 export const typography = {
-  title: { fontSize: 30, fontWeight: "600" as const },
-  subtitle: { fontSize: 14, fontWeight: "400" as const },
-  body: { fontSize: 15, fontWeight: "400" as const },
-  label: { fontSize: 16, fontWeight: "600" as const },
+  title: {
+    fontSize: 30,
+    fontWeight: "600" as const,
+  },
+
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "400" as const,
+  },
+
+  body: {
+    fontSize: 15,
+    fontWeight: "400" as const,
+  },
+
+  label: {
+    fontSize: 16,
+    fontWeight: "600" as const,
+  },
 };
