@@ -1,10 +1,9 @@
 # <img src="./argus-gui/assets/argus-logo.svg" height="64" style="vertical-align: middle; margin-right: 1px;">
 
-argus explores diabetic retinopathy (dr) screening — the kind of work google health has pioneered — can be rebuilt from scratch, end to end: model training, api serving, and a mobile app.
+argus explores diabetic retinopathy (dr) screening — the kind of work google health has pioneered — can be rebuilt from scratch.
 
 `diabetic retinopathy` is damage to the **retina's blood vessels caused by diabetes**, and is a leading cause of preventable blindness worldwide. ai screening tools (cnns trained on retinal fundus photos) have shown they can
-match or exceed specialist-level accuracy at detecting it, which is why
-they're being deployed in regions with few ophthalmologists.
+match or exceed specialist-level accuracy at detecting it, which is why they're being deployed in regions with few ophthalmologists.
 
 > disclaimer: **at the moment this project is not a medical device and is not for clinical use.**
 
