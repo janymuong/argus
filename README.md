@@ -1,9 +1,8 @@
 # <img src="./argus-gui/assets/argus-logo.svg" height="64" style="vertical-align: middle; margin-right: 1px;">
 
-argus explores how AI-assisted diabetic retinopathy (DR) screening — the kind of work google health has pioneered — can be rebuilt from scratch, end to end: model training, api serving, and a mobile app.
+argus explores diabetic retinopathy (dr) screening — the kind of work google health has pioneered — can be rebuilt from scratch, end to end: model training, api serving, and a mobile app.
 
-`diabetic retinopathy` is damage to the **retina's blood vessels caused by diabetes**, and is a leading cause of preventable blindness worldwide. ai
-screening tools (cnns trained on retinal fundus photos) have shown they can
+`diabetic retinopathy` is damage to the **retina's blood vessels caused by diabetes**, and is a leading cause of preventable blindness worldwide. ai screening tools (cnns trained on retinal fundus photos) have shown they can
 match or exceed specialist-level accuracy at detecting it, which is why
 they're being deployed in regions with few ophthalmologists.
 
@@ -11,7 +10,7 @@ they're being deployed in regions with few ophthalmologists.
 
 ## what it does:
 
-given a retinal fundus photo, argus predicts a DR severity grade:
+given a retinal fundus photo, argus predicts a `dr` severity grade:
 
 | class | meaning |
 |-------|---------|
@@ -23,43 +22,15 @@ given a retinal fundus photo, argus predicts a DR severity grade:
 
 ## stack
 
-- **Model:** PyTorch, EfficientNet-B0 backbone (ImageNet-pretrained),
-  fine-tuned on the EyePACS/Kaggle Diabetic Retinopathy Detection dataset.
-  Exported to ONNX for serving.
-- **Training Environment:** Arch Linux, GPU-accelerated, Python venv.
-- **API:** Django + Strawberry GraphQL, with a custom role-based user model and JWT authentication; the `predict` mutation accepts an image upload and is restricted server-side to clinicians.
-- **Mobile app:** React Native (Expo), TypeScript, with Login/Register screens, SecureStore-backed auth state, role-aware navigation, and GraphQL image upload.
-
-## MCP integration
-
-- **Research MCP server:** wraps arXiv search and paper extraction tools.
-- **Argus prediction MCP tool:** exposes the same retinal screening flow through
-  `predict_retina_image(image_path)` so an MCP client can call the model as a
-  tool instead of going through the UI.
-
-## one-command run:
-
-```bash
-./run-argus.py # do within the root directory
-```
-
-## environment variables
-
-put shared secrets and local dev overrides in a single root file:
-
-```bash
-./.env
-```
-
-suggested entries:
-
-```bash
-OPENAI_API_KEY=your_key_here
-ARGUS_GRAPHQL_URL=http://127.0.0.1:8000/graphql/
-```
+- **model:** pytorch, efficientnet-b0 backbone (imagenet-pretrained),
+  fine-tuned on the eyePACS/kaggle diabetic retinopathy detection dataset.
+  exported to onnx for serving.
+- **training environment:** python, gpu-accelerated, pytorch.
+- **API:** strawberry django, with rbac, and jwt authentication; the `predict` mutation accepts an image upload and is restricted server-side to clinicians.
+- **mobile app:** react native (expo), typescript, w/ auth.
 
 
-## structure/layout
+## files:
 
 ```
 argus/
