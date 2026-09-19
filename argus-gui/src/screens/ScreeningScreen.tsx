@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import {
   Platform,
   View,
@@ -10,6 +16,7 @@ import {
   Pressable,
   useWindowDimensions,
 } from "react-native";
+
 import * as ImagePicker from "expo-image-picker";
 
 import AppButton from "../components/AppButton";
@@ -25,6 +32,24 @@ import {
 
 type EyeSelection = "Left" | "Right" | "Both";
 
+const analysisStages = [
+  {
+    title: "Preparing image",
+    description:
+      "Argus is preparing the retinal image for screening.",
+  },
+  {
+    title: "Analyzing image",
+    description:
+      "Argus is analyzing the retinal image for screening patterns.",
+  },
+  {
+    title: "Preparing result",
+    description:
+      "Argus is preparing the screening output for clinical review.",
+  },
+];
+
 export default function ScreeningScreen() {
   const { user, accessToken } = useAuth();
   const { width } = useWindowDimensions();
@@ -35,6 +60,7 @@ export default function ScreeningScreen() {
   const [result, setResult] = useState<PredictResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [eye, setEye] = useState<EyeSelection>("Right");
+  const [analysisStage, setAnalysisStage] = useState(0);
 
   const sessionId = useMemo(() => {
     const suffix = Math.floor(1000 + Math.random() * 9000);
@@ -51,6 +77,7 @@ export default function ScreeningScreen() {
 
       pulse.setValue(0);
       rotate.setValue(0);
+      setAnalysisStage(0);
 
       return;
     }
@@ -89,6 +116,26 @@ export default function ScreeningScreen() {
       rotateLoop.stop();
     };
   }, [loading, pulse, rotate]);
+
+  useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
+    setAnalysisStage(0);
+
+    const stageTimer = setInterval(() => {
+      setAnalysisStage((current) =>
+        current < analysisStages.length - 1
+          ? current + 1
+          : current
+      );
+    }, 1800);
+
+    return () => {
+      clearInterval(stageTimer);
+    };
+  }, [loading]);
 
   const pickFromGallery = async () => {
     const permission =
@@ -204,7 +251,9 @@ export default function ScreeningScreen() {
               />
 
               <View style={styles.patientOrb}>
-                <Text style={styles.patientOrbText}>A</Text>
+                <Text style={styles.patientOrbText}>
+                  A
+                </Text>
               </View>
             </View>
 
@@ -217,9 +266,9 @@ export default function ScreeningScreen() {
             </Text>
 
             <Text style={styles.patientCopy}>
-              Argus helps clinicians analyze retinal images and provides
-              decision-support information that can support a professional
-              eye examination.
+              Argus helps clinicians analyze retinal images and
+              provides decision-support information that can
+              support a professional eye examination.
             </Text>
 
             <View style={styles.patientInfoCard}>
@@ -232,11 +281,13 @@ export default function ScreeningScreen() {
               </Text>
 
               <Text style={styles.patientInfoItem}>
-                • Argus analyzes the image for diabetic retinopathy severity.
+                • Argus analyzes the image for diabetic retinopathy
+                severity.
               </Text>
 
               <Text style={styles.patientInfoItem}>
-                • Your clinician reviews the result and discusses it with you.
+                • Your clinician reviews the result and discusses
+                it with you.
               </Text>
             </View>
 
@@ -250,8 +301,9 @@ export default function ScreeningScreen() {
 
             <View style={styles.disclaimerBox}>
               <Text style={styles.disclaimerText}>
-                Argus predictions are decision-support outputs and are not a
-                substitute for professional clinical judgment.
+                Argus predictions are decision-support outputs and
+                are not a substitute for professional clinical
+                judgment.
               </Text>
             </View>
           </View>
@@ -272,33 +324,6 @@ export default function ScreeningScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.shell}>
-        {/* Clinical header */}
-        <View style={styles.heroCard}>
-          <View style={styles.heroStatusRow}>
-            <View style={styles.heroHeading}>
-              <Text style={styles.heroEyebrow}>
-                RETINAL SCREENING
-              </Text>
-
-              <Text style={styles.heroTitle}>
-                Retinal image assessment
-              </Text>
-
-              <Text style={styles.heroCopy}>
-                Upload a fundus image to assess diabetic retinopathy
-                severity using Argus decision-support analysis.
-              </Text>
-            </View>
-
-            <View style={styles.readyBadge}>
-              <View style={styles.readyDot} />
-
-              <Text style={styles.readyText}>
-                READY
-              </Text>
-            </View>
-          </View>
-        </View>
 
         {/* Screening workspace */}
         <View style={styles.workspaceCard}>
@@ -313,8 +338,8 @@ export default function ScreeningScreen() {
               </Text>
 
               <Text style={styles.sectionDescription}>
-                Select a retinal fundus image, review it, and submit it
-                for screening.
+                Select a retinal fundus image, review it, and submit
+                it for screening.
               </Text>
             </View>
 
@@ -380,8 +405,10 @@ export default function ScreeningScreen() {
                       onPress={() => setEye(option)}
                       style={({ pressed }) => [
                         styles.eyeOption,
-                        eye === option && styles.eyeOptionActive,
-                        pressed && styles.eyeOptionPressed,
+                        eye === option &&
+                        styles.eyeOptionActive,
+                        pressed &&
+                        styles.eyeOptionPressed,
                       ]}
                     >
                       <Text
@@ -461,7 +488,6 @@ export default function ScreeningScreen() {
                 )}
               </View>
 
-              {/* Image actions */}
               {!imageUri ? (
                 <View style={styles.actionStack}>
                   <AppButton
@@ -597,9 +623,9 @@ export default function ScreeningScreen() {
                 </Text>
 
                 <Text style={styles.workflowNoteText}>
-                  Select the appropriate eye, review the image, then run
-                  screening. The output is intended to support clinician
-                  review.
+                  Select the appropriate eye, review the image, then
+                  run screening. The output is intended to support
+                  clinician review.
                 </Text>
               </View>
             </View>
@@ -637,7 +663,10 @@ export default function ScreeningScreen() {
                         {
                           rotate: rotate.interpolate({
                             inputRange: [0, 1],
-                            outputRange: ["0deg", "360deg"],
+                            outputRange: [
+                              "0deg",
+                              "360deg",
+                            ],
                           }),
                         },
                       ],
@@ -652,295 +681,266 @@ export default function ScreeningScreen() {
 
               <View style={styles.analysisTextBlock}>
                 <Text style={styles.analysisEyebrow}>
-                  ARGUS IS ANALYZING
+                  ARGUS IS WORKING
                 </Text>
 
                 <Text style={styles.analysisTitle}>
-                  Reviewing retinal image
+                  {analysisStages[analysisStage].title}
                 </Text>
 
                 <Text style={styles.analysisStep}>
-                  Argus is processing the image and preparing a
-                  diabetic retinopathy screening assessment.
+                  {analysisStages[analysisStage].description}
                 </Text>
               </View>
 
               <View style={styles.analysisStages}>
-                <View style={styles.analysisStage}>
-                  <View style={styles.analysisStageDotActive} />
+                {analysisStages.map((stage, index) => {
+                  const isComplete = index < analysisStage;
+                  const isActive = index === analysisStage;
 
-                  <Text style={styles.analysisStageTextActive}>
-                    Image processing
-                  </Text>
-                </View>
+                  return (
+                    <React.Fragment key={stage.title}>
+                      <View style={styles.analysisStage}>
+                        <View
+                          style={[
+                            styles.analysisStageDot,
+                            isActive &&
+                            styles.analysisStageDotActive,
+                            isComplete &&
+                            styles.analysisStageDotComplete,
+                          ]}
+                        >
+                          {isComplete && (
+                            <Text
+                              style={
+                                styles.analysisStageCheck
+                              }
+                            >
+                              ✓
+                            </Text>
+                          )}
+                        </View>
 
-                <View style={styles.analysisStageLine} />
+                        <Text
+                          style={[
+                            styles.analysisStageText,
+                            isActive &&
+                            styles.analysisStageTextActive,
+                            isComplete &&
+                            styles.analysisStageTextComplete,
+                          ]}
+                        >
+                          {stage.title}
+                        </Text>
+                      </View>
 
-                <View style={styles.analysisStage}>
-                  <View style={styles.analysisStageDot} />
-
-                  <Text style={styles.analysisStageText}>
-                    Feature analysis
-                  </Text>
-                </View>
-
-                <View style={styles.analysisStageLine} />
-
-                <View style={styles.analysisStage}>
-                  <View style={styles.analysisStageDot} />
-
-                  <Text style={styles.analysisStageText}>
-                    Result
-                  </Text>
-                </View>
+                      {index < analysisStages.length - 1 && (
+                        <View
+                          style={[
+                            styles.analysisStageLine,
+                            index < analysisStage &&
+                            styles.analysisStageLineComplete,
+                          ]}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </View>
             </View>
           )}
 
           {/* Screening result */}
-          {result && result.__typename === "PredictionResult" && (
-            <View style={styles.resultBox}>
-              <View style={styles.resultTopRow}>
-                <View style={styles.resultHeader}>
-                  <Text style={styles.resultEyebrow}>
-                    SCREENING RESULT
-                  </Text>
-
-                  <Text style={styles.resultLabel}>
-                    {(result as PredictionResult).predictedClass}
-                  </Text>
-                </View>
-
-                <View style={styles.resultStatusBadge}>
-                  <View style={styles.resultStatusDot} />
-
-                  <Text style={styles.resultStatusText}>
-                    ANALYSIS COMPLETE
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.resultSummaryRow}>
-                <View style={styles.resultSummaryCard}>
-                  <Text style={styles.resultSummaryLabel}>
-                    SESSION
-                  </Text>
-
-                  <Text style={styles.resultSummaryValue}>
-                    {sessionId}
-                  </Text>
-                </View>
-
-                <View style={styles.resultSummaryCard}>
-                  <Text style={styles.resultSummaryLabel}>
-                    EYE
-                  </Text>
-
-                  <Text style={styles.resultSummaryValue}>
-                    {eye}
-                  </Text>
-                </View>
-
-                <View style={styles.resultSummaryCard}>
-                  <Text style={styles.resultSummaryLabel}>
-                    ASSESSMENT
-                  </Text>
-
-                  <Text style={styles.resultSummaryValue}>
-                    Retinal screening
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.resultConfidencePanel}>
-                <View style={styles.confidenceHeader}>
-                  <View>
-                    <Text style={styles.resultConfidenceLabel}>
-                      MODEL CONFIDENCE
+          {result &&
+            result.__typename === "PredictionResult" && (
+              <View style={styles.resultBox}>
+                <View style={styles.resultTopRow}>
+                  <View style={styles.resultHeader}>
+                    <Text style={styles.resultEyebrow}>
+                      SCREENING RESULT
                     </Text>
 
-                    <Text style={styles.resultConfidenceSubtext}>
-                      Confidence associated with the predicted screening
-                      class.
+                    <Text style={styles.resultLabel}>
+                      {
+                        (result as PredictionResult)
+                          .predictedClass
+                      }
+                    </Text>
+
+                    <Text style={styles.resultMeta}>
+                      {sessionId} · {eye} eye
                     </Text>
                   </View>
 
-                  <Text style={styles.resultConfidence}>
-                    {(
-                      (result as PredictionResult).confidence * 100
-                    ).toFixed(1)}
-                    %
-                  </Text>
+                  <View style={styles.resultStatusBadge}>
+                    <View style={styles.resultStatusDot} />
+
+                    <Text style={styles.resultStatusText}>
+                      ANALYSIS COMPLETE
+                    </Text>
+                  </View>
                 </View>
 
-                <View style={styles.resultConfidenceTrack}>
-                  <View
-                    style={[
-                      styles.resultConfidenceFill,
-                      {
-                        width: `${Math.max(
-                          0,
-                          Math.min(
-                            100,
-                            (result as PredictionResult).confidence * 100
-                          )
-                        )}%`,
-                      },
-                    ]}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.resultDivider} />
-
-              <View style={styles.distributionHeader}>
-                <Text style={styles.breakdownTitle}>
-                  Probability distribution
-                </Text>
-
-                <Text style={styles.distributionDescription}>
-                  Distribution of model probabilities across the available
-                  screening classes.
-                </Text>
-              </View>
-
-              <View style={styles.distributionList}>
-                {(result as PredictionResult).allProbabilities.map(
-                  (p) => {
-                    const probability = p.probability * 100;
-
-                    const isPredicted =
-                      p.label ===
-                      (result as PredictionResult).predictedClass;
-
-                    return (
-                      <View
-                        key={p.label}
-                        style={[
-                          styles.resultRow,
-                          isPredicted && styles.resultRowActive,
-                        ]}
+                <View style={styles.primaryConfidence}>
+                  <View style={styles.primaryConfidenceHeader}>
+                    <View>
+                      <Text
+                        style={styles.primaryConfidenceLabel}
                       >
-                        <View style={styles.resultRowHeader}>
-                          <View style={styles.resultNameContainer}>
-                            {isPredicted && (
-                              <View style={styles.predictedMarker} />
-                            )}
+                        MODEL CONFIDENCE
+                      </Text>
 
-                            <Text
-                              style={[
-                                styles.resultName,
-                                isPredicted &&
-                                styles.resultNameActive,
-                              ]}
-                            >
-                              {p.label}
-                            </Text>
-                          </View>
+                      <Text
+                        style={
+                          styles.primaryConfidenceDescription
+                        }
+                      >
+                        Confidence associated with the predicted
+                        screening class.
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={styles.primaryConfidenceValue}
+                    >
+                      {(
+                        (result as PredictionResult).confidence *
+                        100
+                      ).toFixed(1)}
+                      %
+                    </Text>
+                  </View>
+
+                  <View style={styles.primaryConfidenceTrack}>
+                    <View
+                      style={[
+                        styles.primaryConfidenceFill,
+                        {
+                          width: `${Math.max(
+                            0,
+                            Math.min(
+                              100,
+                              (result as PredictionResult)
+                                .confidence * 100
+                            )
+                          )}%`,
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.secondaryProbabilities}>
+                  <Text
+                    style={
+                      styles.secondaryProbabilitiesLabel
+                    }
+                  >
+                    OTHER MODEL PROBABILITIES
+                  </Text>
+
+                  <View style={styles.probabilityInlineList}>
+                    {(result as PredictionResult).allProbabilities
+                      .filter(
+                        (p) =>
+                          p.label !==
+                          (result as PredictionResult)
+                            .predictedClass
+                      )
+                      .map((p) => (
+                        <View
+                          key={p.label}
+                          style={
+                            styles.probabilityInlineItem
+                          }
+                        >
+                          <Text
+                            style={
+                              styles.probabilityInlineName
+                            }
+                          >
+                            {p.label}
+                          </Text>
 
                           <Text
-                            style={[
-                              styles.resultScore,
-                              isPredicted &&
-                              styles.resultScoreActive,
-                            ]}
+                            style={
+                              styles.probabilityInlineValue
+                            }
                           >
-                            {probability.toFixed(1)}%
+                            {(p.probability * 100).toFixed(1)}%
                           </Text>
                         </View>
-
-                        <View style={styles.resultBarTrack}>
-                          <View
-                            style={[
-                              styles.resultBarFill,
-                              isPredicted &&
-                              styles.resultBarFillActive,
-                              {
-                                width: `${Math.max(
-                                  0,
-                                  Math.min(100, probability)
-                                )}%`,
-                              },
-                            ]}
-                          />
-                        </View>
-                      </View>
-                    );
-                  }
-                )}
-              </View>
-
-              <View style={styles.interpretationBox}>
-                <View style={styles.interpretationHeader}>
-                  <View style={styles.interpretationIcon}>
-                    <Text style={styles.interpretationIconText}>
-                      A
-                    </Text>
+                      ))}
                   </View>
+                </View>
 
-                  <View>
-                    <Text style={styles.interpretationTitle}>
+                <View style={styles.clinicalReview}>
+                  <View style={styles.clinicalReviewHeading}>
+                    <Text style={styles.clinicalReviewTitle}>
                       Clinical review
                     </Text>
 
-                    <Text style={styles.interpretationEyebrow}>
+                    <Text
+                      style={styles.clinicalReviewEyebrow}
+                    >
                       DECISION SUPPORT
                     </Text>
                   </View>
+
+                  <Text style={styles.clinicalReviewText}>
+                    Review the retinal image together with the
+                    screening output and relevant clinical
+                    information before making any clinical decision.
+                  </Text>
                 </View>
 
-                <Text style={styles.interpretationText}>
-                  Review the retinal image together with the screening
-                  output and relevant clinical information before making
-                  any clinical decision.
-                </Text>
+                <View style={styles.resultActions}>
+                  <View style={styles.resultActionPrimary}>
+                    <AppButton
+                      title="Screen another image"
+                      onPress={reset}
+                    />
+                  </View>
+
+                  <View style={styles.resultActionSecondary}>
+                    <AppButton
+                      title="Keep this result"
+                      variant="secondary"
+                      onPress={() => { }}
+                    />
+                  </View>
+                </View>
               </View>
-
-              <View style={styles.resultActions}>
-                <View style={styles.resultActionPrimary}>
-                  <AppButton
-                    title="Screen another image"
-                    onPress={reset}
-                  />
-                </View>
-
-                <View style={styles.resultActionSecondary}>
-                  <AppButton
-                    title="Keep this result"
-                    variant="secondary"
-                    onPress={() => { }}
-                  />
-                </View>
-              </View>
-            </View>
-          )}
+            )}
 
           {/* Error */}
-          {result && result.__typename === "PredictionError" && (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorTitle}>
-                Screening could not be completed
-              </Text>
+          {result &&
+            result.__typename === "PredictionError" && (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorTitle}>
+                  Screening could not be completed
+                </Text>
 
-              <Text style={styles.errorText}>
-                {(result as PredictionError).message}
-              </Text>
+                <Text style={styles.errorText}>
+                  {(result as PredictionError).message}
+                </Text>
 
-              <View style={styles.errorAction}>
-                <AppButton
-                  title="Try again"
-                  onPress={analyze}
-                  disabled={!imageUri || loading}
-                />
+                <View style={styles.errorAction}>
+                  <AppButton
+                    title="Try again"
+                    onPress={analyze}
+                    disabled={!imageUri || loading}
+                  />
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
           <View style={styles.disclaimerBox}>
             <Text style={styles.disclaimerText}>
-              Argus provides decision-support information only. Results
-              should be reviewed by a qualified clinician and should not be
-              used as a standalone clinical diagnosis.
+              Argus provides decision-support information only.
+              Results should be reviewed by a qualified clinician
+              and should not be used as a standalone clinical
+              diagnosis.
             </Text>
           </View>
         </View>
