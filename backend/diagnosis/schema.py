@@ -35,7 +35,7 @@ class UserType:
     role: UserRole
 
 
-def to_user_type(user: User) -> UserType:
+def to_user_type(user: User) -> UserType: # type: ignore
     return UserType(
         id=strawberry.ID(str(user.pk)),
         username=user.username,
@@ -367,7 +367,7 @@ class Mutation:
 
 
 def _issue_tokens(
-    user: User,
+    user: User, # type: ignore
     message: str,
 ) -> AuthPayload:
     refresh = RefreshToken.for_user(user)

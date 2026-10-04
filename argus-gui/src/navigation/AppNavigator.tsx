@@ -21,6 +21,7 @@ import { useAuth } from "../context/AuthContext";
 import ScreeningScreen from "../screens/ScreeningScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OverviewScreen from "../screens/OverviewScreen";
+import PatientOverviewScreen from "../screens/PatientOverviewScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 
 import Logo from "../components/Logo";
@@ -49,22 +50,28 @@ const navigationTheme = {
 
 /*
  * ---------------------------------------------------------
- * ARGUS BRAND
+ * BRAND
  * ---------------------------------------------------------
  */
 
-function BrandBlock() {
+function BrandBlock({
+  patient = false,
+}: {
+  patient?: boolean;
+}) {
   return (
     <View style={styles.brandBlock}>
       <Logo />
 
       <View style={styles.brandDescriptor}>
         <Text style={styles.brandDescriptorTitle}>
-          CLINICAL SCREENING
+          {patient ? "PATIENT PORTAL" : "CLINICAL SCREENING"}
         </Text>
 
         <Text style={styles.brandDescriptorSubtitle}>
-          AI decision support
+          {patient
+            ? "Your screening journey"
+            : "AI decision support"}
         </Text>
       </View>
     </View>
@@ -141,11 +148,11 @@ function SidebarItem({
 
 /*
  * ---------------------------------------------------------
- * SIDEBAR
+ * CLINICIAN SIDEBAR
  * ---------------------------------------------------------
  */
 
-function Sidebar({
+function ClinicianSidebar({
   activeSection,
   onHomePress,
   onScreeningPress,
@@ -254,6 +261,101 @@ function Sidebar({
 
 /*
  * ---------------------------------------------------------
+ * PATIENT SIDEBAR
+ * ---------------------------------------------------------
+ */
+
+function PatientSidebar({
+  onHomePress,
+  onSignOut,
+}: {
+  onHomePress: () => void;
+  onSignOut: () => void;
+}) {
+  return (
+    <View style={styles.sidebar}>
+      <BrandBlock patient />
+
+      <View style={styles.sidebarDivider} />
+
+      <View style={styles.navigationSection}>
+        <Text style={styles.navigationLabel}>
+          MY PORTAL
+        </Text>
+
+        <SidebarItem
+          label="Overview"
+          icon="⌂"
+          active
+          onPress={onHomePress}
+        />
+
+        <SidebarItem
+          label="Screening history"
+          icon="◷"
+          disabled
+        />
+      </View>
+
+      <View style={styles.navigationSection}>
+        <Text style={styles.navigationLabel}>
+          INFORMATION
+        </Text>
+
+        <SidebarItem
+          label="About Argus"
+          icon="◎"
+          disabled
+        />
+
+        <SidebarItem
+          label="Help"
+          icon="?"
+          disabled
+        />
+      </View>
+
+      <View style={styles.sidebarSpacer} />
+
+      <View style={styles.patientReadyCard}>
+        <View style={styles.systemHeader}>
+          <View style={styles.systemStatusDot} />
+
+          <Text style={styles.systemStatusText}>
+            PORTAL READY
+          </Text>
+        </View>
+
+        <Text style={styles.systemDescription}>
+          Your Argus patient portal is available.
+        </Text>
+      </View>
+
+      <View style={styles.sidebarDivider} />
+
+      <Pressable
+        onPress={onSignOut}
+        style={({ pressed }) => [
+          styles.signOutButton,
+          pressed && styles.signOutButtonPressed,
+        ]}
+      >
+        <View style={styles.signOutIcon}>
+          <Text style={styles.signOutIconText}>
+            ↪
+          </Text>
+        </View>
+
+        <Text style={styles.signOutText}>
+          Sign out
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+/*
+ * ---------------------------------------------------------
  * TOP BAR
  * ---------------------------------------------------------
  */
@@ -261,17 +363,20 @@ function Sidebar({
 function TopBar({
   username,
   role,
+  patient = false,
   activeSection,
 }: {
   username: string;
   role: string;
-  activeSection: "Home" | "Screening";
+  patient?: boolean;
+  activeSection?: "Home" | "Screening";
 }) {
   const initial =
     username?.charAt(0).toUpperCase() || "U";
 
-  const pageTitle =
-    activeSection === "Screening"
+  const pageTitle = patient
+    ? "Overview"
+    : activeSection === "Screening"
       ? "Retinal screening"
       : "Overview";
 
@@ -279,7 +384,9 @@ function TopBar({
     <View style={styles.topBar}>
       <View style={styles.topBarLeft}>
         <Text style={styles.topBarSection}>
-          CLINICAL WORKSPACE
+          {patient
+            ? "PATIENT PORTAL"
+            : "CLINICAL WORKSPACE"}
         </Text>
 
         <View style={styles.topBarSeparator} />
@@ -294,7 +401,7 @@ function TopBar({
           <View style={styles.environmentDot} />
 
           <Text style={styles.environmentText}>
-            CLINICAL MODE
+            {patient ? "PATIENT MODE" : "CLINICAL MODE"}
           </Text>
         </View>
 
@@ -327,7 +434,7 @@ function TopBar({
 
 /*
  * ---------------------------------------------------------
- * AUTHENTICATED WORKSPACE
+ * CLINICIAN SHELL
  * ---------------------------------------------------------
  */
 
@@ -353,7 +460,7 @@ function ClinicianShell({
 
   return (
     <View style={styles.appShell}>
-      <Sidebar
+      <ClinicianSidebar
         activeSection={activeSection}
         onHomePress={goHome}
         onScreeningPress={goScreening}
@@ -384,6 +491,41 @@ function ClinicianShell({
 
 /*
  * ---------------------------------------------------------
+ * PATIENT SHELL
+ * ---------------------------------------------------------
+ */
+
+function PatientShell({
+  user,
+  logout,
+}: {
+  user: any;
+  logout: () => Promise<void>;
+}) {
+  return (
+    <View style={styles.appShell}>
+      <PatientSidebar
+        onHomePress={() => { }}
+        onSignOut={() => void logout()}
+      />
+
+      <View style={styles.mainArea}>
+        <TopBar
+          username={user.username}
+          role={user.role}
+          patient
+        />
+
+        <View style={styles.contentArea}>
+          <PatientOverviewScreen />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/*
+ * ---------------------------------------------------------
  * MAIN NAVIGATOR
  * ---------------------------------------------------------
  */
@@ -402,10 +544,17 @@ export default function AppNavigator() {
   return (
     <NavigationContainer theme={navigationTheme}>
       {user ? (
-        <ClinicianShell
-          user={user}
-          logout={logout}
-        />
+        user.role === "PATIENT" ? (
+          <PatientShell
+            user={user}
+            logout={logout}
+          />
+        ) : (
+          <ClinicianShell
+            user={user}
+            logout={logout}
+          />
+        )
       ) : (
         <Stack.Navigator
           screenOptions={{
@@ -443,10 +592,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: colors.background,
   },
-
-  /*
-   * SIDEBAR
-   */
 
   sidebar: {
     width: 232,
@@ -592,6 +737,16 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
 
+  patientReadyCard: {
+    width: "100%",
+    backgroundColor: colors.primaryDark,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+
   systemHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -650,19 +805,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  /*
-   * MAIN AREA
-   */
-
   mainArea: {
     flex: 1,
     minWidth: 0,
     backgroundColor: colors.background,
   },
-
-  /*
-   * TOP BAR
-   */
 
   topBar: {
     width: "100%",
@@ -781,10 +928,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     textTransform: "uppercase",
   },
-
-  /*
-   * CONTENT
-   */
 
   contentArea: {
     flex: 1,
