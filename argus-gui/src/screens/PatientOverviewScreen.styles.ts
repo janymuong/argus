@@ -1,103 +1,97 @@
 import { StyleSheet } from "react-native";
+import { colors, radii, spacing } from "../theme/tokens";
 
-import {
-    colors,
-    spacing,
-    radii,
-} from "../theme/tokens";
-
-export const patientOverviewStyles = StyleSheet.create({
+export default StyleSheet.create({
     page: {
-        flexGrow: 1,
+        flex: 1,
         backgroundColor: colors.background,
-        padding: spacing.lg,
+    },
+
+    content: {
+        paddingBottom: spacing.xl,
     },
 
     shell: {
         width: "100%",
-        maxWidth: 1100,
+        maxWidth: 920,
         alignSelf: "center",
-        gap: spacing.lg,
-        paddingBottom: spacing.xl,
+        paddingHorizontal: spacing.xl,
+        paddingTop: spacing.xl,
     },
 
-    /*
-     * ---------------------------------------------------------
-     * WELCOME
-     * ---------------------------------------------------------
-     */
+    /* Welcome */
 
-    welcomeSection: {
-        paddingVertical: spacing.sm,
+    welcome: {
+        marginBottom: spacing.xl,
     },
 
     eyebrow: {
         color: colors.primary,
-        fontSize: 8,
-        fontWeight: "800",
-        letterSpacing: 1,
+        fontSize: 10,
+        fontWeight: "700",
+        letterSpacing: 1.2,
         marginBottom: spacing.xs,
     },
 
-    welcomeTitle: {
+    title: {
         color: colors.textPrimary,
         fontSize: 30,
-        fontWeight: "700",
+        fontWeight: "600",
+        marginBottom: spacing.sm,
     },
 
-    welcomeCopy: {
+    subtitle: {
         color: colors.textSecondary,
-        fontSize: 12,
-        lineHeight: 19,
-        maxWidth: 700,
-        marginTop: spacing.sm,
+        fontSize: 14,
+        lineHeight: 21,
+        maxWidth: 680,
     },
 
-    /*
-     * ---------------------------------------------------------
-     * SCREENING STATUS
-     * ---------------------------------------------------------
-     */
+    /* Screening status */
 
-    statusCard: {
+    screeningCard: {
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
         borderRadius: radii.lg,
         padding: spacing.lg,
+        marginBottom: spacing.xl,
     },
 
-    statusHeader: {
+    screeningTop: {
         flexDirection: "row",
-        alignItems: "flex-start",
         justifyContent: "space-between",
-        gap: spacing.lg,
+        alignItems: "flex-start",
+        gap: spacing.md,
+    },
+
+    screeningHeading: {
+        flex: 1,
     },
 
     cardEyebrow: {
         color: colors.textSecondary,
-        fontSize: 8,
-        fontWeight: "800",
-        letterSpacing: 0.9,
+        fontSize: 9,
+        fontWeight: "700",
+        letterSpacing: 1.1,
         marginBottom: spacing.xs,
     },
 
-    statusTitle: {
+    screeningTitle: {
         color: colors.textPrimary,
-        fontSize: 21,
-        fontWeight: "700",
+        fontSize: 22,
+        fontWeight: "600",
     },
 
     statusBadge: {
         flexDirection: "row",
         alignItems: "center",
-        gap: spacing.xs,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.xs,
-        borderRadius: radii.pill,
-        backgroundColor: colors.background,
         borderWidth: 1,
         borderColor: colors.border,
+        borderRadius: radii.pill,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 5,
+        marginTop: 1,
     },
 
     statusDot: {
@@ -105,229 +99,191 @@ export const patientOverviewStyles = StyleSheet.create({
         height: 6,
         borderRadius: 3,
         backgroundColor: colors.textSecondary,
-        opacity: 0.65,
+        marginRight: 6,
     },
 
-    statusBadgeText: {
+    statusText: {
         color: colors.textSecondary,
-        fontSize: 7,
-        fontWeight: "800",
-        letterSpacing: 0.7,
+        fontSize: 9,
+        fontWeight: "700",
+        letterSpacing: 0.8,
     },
 
-    statusCopy: {
+    screeningCopy: {
         color: colors.textSecondary,
-        fontSize: 11,
-        lineHeight: 18,
-        maxWidth: 760,
+        fontSize: 13,
+        lineHeight: 20,
         marginTop: spacing.md,
+        maxWidth: 760,
     },
 
-    statusFooter: {
+    screeningFooter: {
         flexDirection: "row",
         alignItems: "center",
-        gap: spacing.sm,
-        marginTop: spacing.lg,
-        paddingTop: spacing.md,
         borderTopWidth: 1,
         borderTopColor: colors.border,
+        marginTop: spacing.lg,
+        paddingTop: spacing.md,
     },
 
-    statusFooterIndicator: {
+    footerDot: {
         width: 6,
         height: 6,
         borderRadius: 3,
         backgroundColor: colors.primary,
+        marginRight: spacing.sm,
     },
 
-    statusFooterText: {
+    footerText: {
         color: colors.textSecondary,
-        fontSize: 9,
+        fontSize: 11,
     },
 
-    /*
-     * ---------------------------------------------------------
-     * GENERAL SECTIONS
-     * ---------------------------------------------------------
-     */
+    /* Sections */
 
     section: {
-        gap: spacing.sm,
-    },
-
-    sectionEyebrow: {
-        color: colors.primary,
-        fontSize: 8,
-        fontWeight: "800",
-        letterSpacing: 0.9,
+        marginBottom: spacing.xl,
     },
 
     sectionTitle: {
         color: colors.textPrimary,
-        fontSize: 19,
-        fontWeight: "700",
+        fontSize: 20,
+        fontWeight: "600",
+        marginBottom: spacing.md,
     },
 
-    sectionCopy: {
-        color: colors.textSecondary,
-        fontSize: 11,
-        lineHeight: 18,
-        maxWidth: 760,
-    },
+    /* Screening process */
 
-    /*
-     * ---------------------------------------------------------
-     * ARGUS INFORMATION
-     * ---------------------------------------------------------
-     */
-
-    infoCard: {
-        flexDirection: "row",
-        alignItems: "flex-start",
-        gap: spacing.md,
-        backgroundColor: colors.surface,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radii.md,
-        padding: spacing.lg,
-        marginTop: spacing.xs,
-    },
-
-    infoIcon: {
-        width: 38,
-        height: 38,
-        borderRadius: 19,
-        backgroundColor: colors.primaryDark,
-        borderWidth: 1,
-        borderColor: colors.border,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    infoIconText: {
-        color: colors.primary,
-        fontSize: 15,
-        fontWeight: "800",
-    },
-
-    infoContent: {
-        flex: 1,
-        gap: spacing.xs,
-    },
-
-    infoTitle: {
-        color: colors.textPrimary,
-        fontSize: 12,
-        fontWeight: "700",
-    },
-
-    infoText: {
-        color: colors.textSecondary,
-        fontSize: 10,
-        lineHeight: 16,
-    },
-
-    /*
-     * ---------------------------------------------------------
-     * SCREENING JOURNEY
-     * ---------------------------------------------------------
-     */
-
-    stepsCard: {
+    processCard: {
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
         borderRadius: radii.lg,
         padding: spacing.lg,
-        marginTop: spacing.xs,
     },
 
-    step: {
+    processStep: {
         flexDirection: "row",
         alignItems: "flex-start",
-        gap: spacing.md,
     },
 
     stepNumber: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: colors.primaryDark,
+        width: 34,
+        height: 34,
+        borderRadius: 17,
         borderWidth: 1,
         borderColor: colors.border,
+        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
+        marginRight: spacing.md,
     },
 
     stepNumberText: {
         color: colors.primary,
-        fontSize: 11,
-        fontWeight: "800",
+        fontSize: 10,
+        fontWeight: "700",
+        letterSpacing: 0.5,
     },
 
     stepContent: {
         flex: 1,
-        gap: 3,
+        paddingTop: 2,
     },
 
     stepTitle: {
         color: colors.textPrimary,
-        fontSize: 11,
-        fontWeight: "700",
+        fontSize: 13,
+        fontWeight: "600",
+        marginBottom: 3,
     },
 
     stepText: {
         color: colors.textSecondary,
-        fontSize: 9,
-        lineHeight: 15,
-        maxWidth: 760,
+        fontSize: 11,
+        lineHeight: 17,
+        maxWidth: 700,
     },
 
-    stepLine: {
+    stepConnector: {
+        height: 18,
         width: 1,
-        height: 22,
         backgroundColor: colors.border,
-        marginLeft: 14.5,
-        marginVertical: 3,
+        marginLeft: 17,
+        marginVertical: 4,
     },
 
-    /*
-     * ---------------------------------------------------------
-     * IMPORTANT INFORMATION
-     * ---------------------------------------------------------
-     */
+    /* About */
 
-    importantCard: {
-        backgroundColor: colors.primaryDark,
+    aboutCard: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: radii.md,
+        borderRadius: radii.lg,
         padding: spacing.lg,
     },
 
-    importantHeader: {
-        flexDirection: "row",
+    aboutIcon: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
-        gap: spacing.sm,
+        justifyContent: "center",
+        marginRight: spacing.md,
     },
 
-    importantIndicator: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: colors.accent,
-    },
-
-    importantTitle: {
-        color: colors.textPrimary,
-        fontSize: 11,
+    aboutIconText: {
+        color: colors.primary,
+        fontSize: 14,
         fontWeight: "700",
     },
 
-    importantText: {
+    aboutContent: {
+        flex: 1,
+    },
+
+    aboutTitle: {
+        color: colors.textPrimary,
+        fontSize: 13,
+        fontWeight: "600",
+        marginBottom: 4,
+    },
+
+    aboutText: {
         color: colors.textSecondary,
-        fontSize: 9,
-        lineHeight: 15,
-        marginTop: spacing.sm,
+        fontSize: 11,
+        lineHeight: 18,
+        maxWidth: 740,
+    },
+
+    /* Disclaimer */
+
+    disclaimer: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.sm,
+        marginTop: spacing.xs,
+    },
+
+    disclaimerIndicator: {
+        width: 5,
+        height: 5,
+        borderRadius: 3,
+        backgroundColor: colors.accent,
+        marginTop: 5,
+        marginRight: spacing.sm,
+    },
+
+    disclaimerText: {
+        flex: 1,
+        color: colors.textSecondary,
+        fontSize: 10,
+        lineHeight: 16,
     },
 });
