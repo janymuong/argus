@@ -1,4 +1,4 @@
-# <img src="./argus-gui/assets/argus-logo.svg" height="64" style="vertical-align: middle; margin-right: 1px;">
+# <img src="./argus-gui/assets/argus-logo-1024px.webp" height="64" style="vertical-align: middle; margin-right: 1px;">
 
 argus explores diabetic retinopathy (dr) screening — the kind of work google health has pioneered — can be rebuilt from scratch.
 
