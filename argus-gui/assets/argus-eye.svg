@@ -1,0 +1,74 @@
+<svg id="argusSvg" viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-sm">
+                                <defs>
+                                    <!-- Linear Gradients for Elegant Medical Tech Feel -->
+                                    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#0d9488"/>
+                                        <stop offset="50%" stop-color="#14b8a6"/>
+                                        <stop offset="100%" stop-color="#06b6d4"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="vesselGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#2dd4bf"/>
+                                        <stop offset="100%" stop-color="#38bdf8"/>
+                                    </linearGradient>
+
+                                    <linearGradient id="pupilGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#0f766e"/>
+                                        <stop offset="100%" stop-color="#0e7490"/>
+                                    </linearGradient>
+
+                                    <!-- Soft Glow Filter -->
+                                    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                                    </filter>
+                                </defs>
+
+                                <!-- Graphic Icon Group (Centered around X=250, Y=160) -->
+                                <g id="logoIconGroup" transform="translate(0, 0)">
+                                    
+                                    <!-- Outer Circular Aperture Ring (Scanning Grid Motif) -->
+                                    <circle cx="250" cy="150" r="105" fill="none" stroke="url(#primaryGrad)" stroke-width="2" stroke-dasharray="6 8" opacity="0.35"/>
+                                    
+                                    <!-- Minimalist Outer Eye Frame (Upper and Lower Lids) -->
+                                    <!-- Upper Eyelid Curve -->
+                                    <path d="M 150 150 C 180 85, 320 85, 350 150" fill="none" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+                                    
+                                    <!-- Lower Eyelid Curve -->
+                                    <path d="M 150 150 C 180 215, 320 215, 350 150" fill="none" stroke="url(#primaryGrad)" stroke-width="6" stroke-linecap="round"/>
+
+                                    <!-- Central Retinal Iris Ring -->
+                                    <circle cx="250" cy="150" r="54" fill="none" stroke="url(#primaryGrad)" stroke-width="4.5"/>
+                                    
+                                    <!-- Center Pupil / AI Lens Point -->
+                                    <circle cx="250" cy="150" r="22" fill="url(#pupilGrad)"/>
+                                    <circle cx="243" cy="143" r="5" fill="#ffffff" opacity="0.85"/>
+
+                                    <!-- Stylized Retinal Blood Vessel Tree / Neural Branching -->
+                                    <!-- Branch 1: Upper Right Retinal Arc -->
+                                    <path d="M 288 122 Q 315 110, 335 88 M 315 110 Q 330 118, 345 115 M 335 88 Q 350 82, 360 85" fill="none" stroke="url(#vesselGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+                                    <!-- Branch 2: Lower Right Retinal Arc -->
+                                    <path d="M 288 178 Q 318 190, 340 212 M 318 190 Q 332 182, 348 185" fill="none" stroke="url(#vesselGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+                                    <!-- Branch 3: Lower Left Branch -->
+                                    <path d="M 212 178 Q 185 192, 162 210 M 185 192 Q 172 182, 158 184" fill="none" stroke="url(#vesselGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+
+                                    <!-- Precise Medical Alignment Crosshairs / Focus Anchors -->
+                                    <line x1="250" y1="30" x2="250" y2="42" stroke="url(#primaryGrad)" stroke-width="3" stroke-linecap="round"/>
+                                    <line x1="250" y1="258" x2="250" y2="270" stroke="url(#primaryGrad)" stroke-width="3" stroke-linecap="round"/>
+                                    <line x1="130" y1="150" x2="142" y2="150" stroke="url(#primaryGrad)" stroke-width="3" stroke-linecap="round"/>
+                                    <line x1="358" y1="150" x2="370" y2="150" stroke="url(#primaryGrad)" stroke-width="3" stroke-linecap="round"/>
+
+                                    <!-- Data Nodes / Screening Indicators (Soft Circles) -->
+                                    <circle cx="360" cy="85" r="3.5" fill="#38bdf8"/>
+                                    <circle cx="345" cy="115" r="3" fill="#2dd4bf"/>
+                                    <circle cx="340" cy="212" r="3.5" fill="#38bdf8"/>
+                                    <circle cx="162" cy="210" r="3" fill="#2dd4bf"/>
+                                </g>
+
+                                <!-- Modern Minimalist Typography "ARGUS" -->
+                                <g id="logoTextGroup" transform="translate(0, 0)">
+                                    <text x="250" y="325" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="38" letter-spacing="0.32em" id="brandTextElement" fill="#0f172a" class="dark:fill-white">ARGUS</text>
+                                </g>
+                            </svg>
