@@ -1,13 +1,29 @@
 """Django settings for Argus backend (local dev)."""
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+from dotenv import load_dotenv
 
-SECRET_KEY = "dev-only-not-secure-change-before-any-real-deployment"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = BASE_DIR.parent
+
+# load .env file.
+# override=True makes the file take precedence over old shell exports.
+load_dotenv(PROJECT_ROOT / ".env", override=True)
+
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "dev-only-not-secure-change-before-any-real-deployment",
+)
+
+DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
+
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "*",
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -56,14 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "argus_api.wsgi.application"
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -78,15 +86,23 @@ DATABASES = {
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
+    },
 ]
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": __import__("datetime").timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": __import__("datetime").timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
@@ -96,11 +112,22 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_TZ = True
+
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 CORS_ALLOW_ALL_ORIGINS = True
 
-ARGUS_MODEL_PATH = BASE_DIR.parent / "model" / "checkpoints" / "argus_model.onnx"
-ARGUS_CLASS_NAMES = ["No DR", "Mild", "Moderate", "Severe", "Proliferative DR"]
+ARGUS_MODEL_PATH = (
+    BASE_DIR.parent / "model" / "checkpoints" / "argus_model.onnx"
+)
+ARGUS_CLASS_NAMES = [
+    "No DR",
+    "Mild",
+    "Moderate",
+    "Severe",
+    "Proliferative DR",
+]
 ARGUS_IMG_SIZE = 224
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
