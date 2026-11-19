@@ -2,6 +2,7 @@
 
 from io import BytesIO
 from enum import Enum
+from datetime import datetime
 from typing import Annotated, List, Optional, Union
 
 import strawberry
@@ -66,6 +67,15 @@ class ClassProbability:
     label: str
     probability: float
 
+@strawberry.type
+class ScreeningRecordType:
+    id: strawberry.ID
+    patient_username: str
+    clinician_username: str
+    predicted_class: str
+    confidence: float
+    all_probabilities: List[ClassProbability]
+    created_at: datetime
 
 @strawberry.type
 class PredictionResult:
@@ -139,6 +149,55 @@ class Query:
                 role=User.Role.PATIENT,
                 is_active=True,
             ).order_by("username")
+        ]
+
+    @strawberry.field
+    def screening_history(self, info: Info,) -> List[ScreeningRecordType]:
+        """
+        Return screening records visible to the authenticated user.
+
+        Clinicians see records they performed.
+        Patients see their own records.
+        Administrators can see all records.
+        """
+        user = authenticated_user(info)
+
+        if user is None:
+            return []
+
+        records = ScreeningRecord.objects.select_related(
+            "patient",
+            "clinician",
+        )
+
+        if user.role == User.Role.CLINICIAN:
+            records = records.filter(clinician=user)
+
+        elif user.role == User.Role.PATIENT:
+            records = records.filter(patient=user)
+
+        elif user.role != User.Role.ADMIN:
+            return []
+
+        return [
+            ScreeningRecordType(
+                id=strawberry.ID(str(record.pk)),
+                patient_username=record.patient.username,
+                clinician_username=record.clinician.username,
+                predicted_class=record.predicted_class,
+                confidence=record.confidence,
+                all_probabilities=[
+                    ClassProbability(
+                        label=label,
+                        probability=float(probability),
+                    )
+                    for label, probability in (
+                        record.all_probabilities or {}
+                    ).items()
+                ],
+                created_at=record.created_at,
+            )
+            for record in records.order_by("-created_at")
         ]
 
 

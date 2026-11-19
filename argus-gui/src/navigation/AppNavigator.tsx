@@ -19,6 +19,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 import ScreeningScreen from "../screens/ScreeningScreen";
+import ScreeningHistoryScreen from "../screens/ScreeningHistoryScreen";
 import LoginScreen from "../screens/LoginScreen";
 import OverviewScreen from "../screens/OverviewScreen";
 import PatientOverviewScreen from "../screens/PatientOverviewScreen";
@@ -156,11 +157,13 @@ function ClinicianSidebar({
   activeSection,
   onHomePress,
   onScreeningPress,
+  onHistoryPress,
   onSignOut,
 }: {
-  activeSection: "Home" | "Screening";
+  activeSection: "Home" | "Screening" | "History";
   onHomePress: () => void;
   onScreeningPress: () => void;
+  onHistoryPress: () => void;
   onSignOut: () => void;
 }) {
   return (
@@ -187,18 +190,19 @@ function ClinicianSidebar({
           active={activeSection === "Screening"}
           onPress={onScreeningPress}
         />
+
+        <SidebarItem
+          label="History"
+          icon="◷"
+          active={activeSection === "History"}
+          onPress={onHistoryPress}
+        />
       </View>
 
       <View style={styles.navigationSection}>
         <Text style={styles.navigationLabel}>
           CLINICAL
         </Text>
-
-        <SidebarItem
-          label="History"
-          icon="◷"
-          disabled
-        />
 
         <SidebarItem
           label="Patients"
@@ -369,7 +373,7 @@ function TopBar({
   username: string;
   role: string;
   patient?: boolean;
-  activeSection?: "Home" | "Screening";
+  activeSection?: "Home" | "Screening" | "History";
 }) {
   const initial =
     username?.charAt(0).toUpperCase() || "U";
@@ -378,7 +382,9 @@ function TopBar({
     ? "Overview"
     : activeSection === "Screening"
       ? "Retinal screening"
-      : "Overview";
+      : activeSection === "History"
+        ? "Screening history"
+        : "Overview";
 
   return (
     <View style={styles.topBar}>
@@ -446,7 +452,7 @@ function ClinicianShell({
   logout: () => Promise<void>;
 }) {
   const [activeSection, setActiveSection] =
-    useState<"Home" | "Screening">("Home");
+    useState<"Home" | "Screening" | "History">("Home");
 
   const goHome = () => {
     setActiveSection("Home");
@@ -458,12 +464,17 @@ function ClinicianShell({
     }
   };
 
+  const goHistory = () => {
+    setActiveSection("History");
+  };
+
   return (
     <View style={styles.appShell}>
       <ClinicianSidebar
         activeSection={activeSection}
         onHomePress={goHome}
         onScreeningPress={goScreening}
+        onHistoryPress={goHistory}
         onSignOut={() => void logout()}
       />
 
@@ -478,10 +489,10 @@ function ClinicianShell({
           {activeSection === "Screening" &&
             user.role === "CLINICIAN" ? (
             <ScreeningScreen />
+          ) : activeSection === "History" ? (
+            <ScreeningHistoryScreen />
           ) : (
-            <OverviewScreen
-              onOpenScreening={goScreening}
-            />
+            <OverviewScreen onOpenScreening={goScreening} />
           )}
         </View>
       </View>
