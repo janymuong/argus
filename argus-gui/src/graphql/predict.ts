@@ -15,10 +15,11 @@ const isWeb = typeof window !== "undefined";
 export const API_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/graphql/`;
 
 export const PREDICT_MUTATION = `
-  mutation Predict($file: Upload!) {
-    predict(image: $file) {
+  mutation Predict($file: Upload!, $patientId: ID!) {
+    predict(image: $file, patientId: $patientId) {
       __typename
       ... on PredictionResult {
+        screeningRecordId
         predictedClass
         confidence
         allProbabilities {
@@ -35,6 +36,7 @@ export const PREDICT_MUTATION = `
 
 export type PredictionResult = {
   __typename: "PredictionResult";
+  screeningRecordId: string;
   predictedClass: string;
   confidence: number;
   allProbabilities: { label: string; probability: number }[];
@@ -47,19 +49,63 @@ export type PredictionError = {
 
 export type PredictResponse = PredictionResult | PredictionError;
 
+export type PatientOption = {
+  id: string;
+  username: string;
+  email: string;
+  role: "PATIENT";
+};
+
+const PATIENTS_QUERY = `
+  query Patients {
+    patients {
+      id
+      username
+      email
+      role
+    }
+  }
+`;
+
+export async function fetchPatients(accessToken: string): Promise<PatientOption[]> {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ query: PATIENTS_QUERY }),
+  });
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Server returned ${response.status}.`);
+  }
+  if (json.errors?.length) {
+    throw new Error(json.errors[0].message);
+  }
+  return (json.data?.patients ?? []) as PatientOption[];
+}
+
 /**
  * Sends a fundus photo to the predict mutation using the GraphQL
  * multipart request spec directly, bypassing any client library's
  * automatic (and on RN, unreliable) file extraction.
  */
-export async function runPrediction(imageUri: string, accessToken: string): Promise<PredictResponse> {
+export async function runPrediction(
+  imageUri: string,
+  accessToken: string,
+  patientId: string,
+): Promise<PredictResponse> {
   const formData = new FormData();
 
   formData.append(
     "operations",
     JSON.stringify({
       query: PREDICT_MUTATION,
-      variables: { file: null },
+      variables: { file: null, patientId },
     })
   );
   formData.append("map", JSON.stringify({ "0": ["variables.file"] }));

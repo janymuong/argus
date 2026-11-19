@@ -9,12 +9,14 @@ from strawberry.types import Info
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from strawberry.file_uploads import Upload
 from PIL import Image, UnidentifiedImageError
 
 from diagnosis.inference import get_model
+from diagnosis.models import ScreeningRecord
 
 
 User = get_user_model()
@@ -67,6 +69,7 @@ class ClassProbability:
 
 @strawberry.type
 class PredictionResult:
+    screening_record_id: strawberry.ID
     predicted_class: str
     confidence: float
     all_probabilities: List[ClassProbability]
@@ -122,6 +125,21 @@ class Query:
     def me(self, info: Info) -> Optional[UserType]:
         user = authenticated_user(info)
         return to_user_type(user) if user else None
+
+    @strawberry.field
+    def patients(self, info: Info) -> List[UserType]:
+        """List active patient accounts for an authenticated clinician."""
+        user = authenticated_user(info)
+        if user is None or user.role != User.Role.CLINICIAN:
+            return []
+
+        return [
+            to_user_type(patient)
+            for patient in User.objects.filter(
+                role=User.Role.PATIENT,
+                is_active=True,
+            ).order_by("username")
+        ]
 
 
 @strawberry.type
@@ -319,17 +337,25 @@ class Mutation:
         self,
         info: Info,
         image: Upload,
+        patient_id: strawberry.ID,
     ) -> PredictionResponse:
-        user = authenticated_user(info)
+        clinician = authenticated_user(info)
 
-        if user is None:
-            return PredictionError(
-                message="Authentication required.",
+        if clinician is None:
+            return PredictionError(message="Authentication required.")
+
+        if clinician.role != User.Role.CLINICIAN:
+            return PredictionError(message="Only clinicians can run predictions.")
+
+        try:
+            patient = User.objects.get(
+                pk=int(patient_id),
+                role=User.Role.PATIENT,
+                is_active=True,
             )
-
-        if user.role != User.Role.CLINICIAN:
+        except (User.DoesNotExist, TypeError, ValueError):
             return PredictionError(
-                message="Only clinicians can run predictions.",
+                message="Select a valid, active patient before screening."
             )
 
         raw_bytes = image.read()
@@ -337,31 +363,41 @@ class Mutation:
         try:
             pil_image = Image.open(BytesIO(raw_bytes))
             pil_image.load()
-
-        except UnidentifiedImageError:
+        except (UnidentifiedImageError, OSError):
             return PredictionError(
-                message="Uploaded file is not a valid image.",
+                message="Uploaded file is not a valid image."
             )
 
         try:
             model = get_model()
-
         except FileNotFoundError as exc:
-            return PredictionError(
-                message=str(exc),
-            )
+            return PredictionError(message=str(exc))
 
         result = model.predict(pil_image)
+        probabilities = {
+            str(label): float(probability)
+            for label, probability in result["all_probabilities"].items()
+        }
+        predicted_class = str(result["predicted_class"])
+        confidence = float(result["confidence"])
+
+        # Persist the prediction and its participants together.
+        with transaction.atomic():
+            record = ScreeningRecord.objects.create(
+                patient=patient,
+                clinician=clinician,
+                predicted_class=predicted_class,
+                confidence=confidence,
+                all_probabilities=probabilities,
+            )
 
         return PredictionResult(
-            predicted_class=result["predicted_class"],
-            confidence=result["confidence"],
+            screening_record_id=strawberry.ID(str(record.pk)),
+            predicted_class=predicted_class,
+            confidence=confidence,
             all_probabilities=[
-                ClassProbability(
-                    label=label,
-                    probability=prob,
-                )
-                for label, prob in result["all_probabilities"].items()
+                ClassProbability(label=label, probability=probability)
+                for label, probability in probabilities.items()
             ],
         )
 

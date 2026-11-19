@@ -14,6 +14,7 @@ import {
   Animated,
   Easing,
   Pressable,
+  TextInput,
   useWindowDimensions,
 } from "react-native";
 
@@ -25,6 +26,8 @@ import { useAuth } from "../context/AuthContext";
 
 import {
   runPrediction,
+  fetchPatients,
+  PatientOption,
   PredictResponse,
   PredictionResult,
   PredictionError,
@@ -61,11 +64,44 @@ export default function ScreeningScreen() {
   const [loading, setLoading] = useState(false);
   const [eye, setEye] = useState<EyeSelection>("Right");
   const [analysisStage, setAnalysisStage] = useState(0);
+  const [patients, setPatients] = useState<PatientOption[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [patientSearch, setPatientSearch] = useState("");
+  const [patientsLoading, setPatientsLoading] = useState(false);
+  const [patientsError, setPatientsError] = useState<string | null>(null);
 
   const sessionId = useMemo(() => {
     const suffix = Math.floor(1000 + Math.random() * 9000);
     return `ARG-${suffix}`;
   }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadPatients = async () => {
+      if (!accessToken || user?.role !== "CLINICIAN") return;
+      setPatientsLoading(true);
+      setPatientsError(null);
+      try {
+        const loadedPatients = await fetchPatients(accessToken);
+        if (active) setPatients(loadedPatients);
+      } catch (error: any) {
+        if (active) setPatientsError(error?.message ?? "Could not load patients.");
+      } finally {
+        if (active) setPatientsLoading(false);
+      }
+    };
+
+    loadPatients();
+    return () => { active = false; };
+  }, [accessToken, user?.role]);
+
+  const filteredPatients = patients.filter((patient) => {
+    const search = patientSearch.trim().toLowerCase();
+    return !search || patient.username.toLowerCase().includes(search) ||
+      patient.email.toLowerCase().includes(search);
+  });
+  const selectedPatient = patients.find((patient) => patient.id === selectedPatientId) ?? null;
 
   const pulse = useRef(new Animated.Value(0)).current;
   const rotate = useRef(new Animated.Value(0)).current;
@@ -189,6 +225,13 @@ export default function ScreeningScreen() {
 
   const analyze = async () => {
     if (!imageUri) return;
+    if (!selectedPatientId) {
+      setResult({
+        __typename: "PredictionError",
+        message: "Select a patient before running the screening.",
+      });
+      return;
+    }
 
     setLoading(true);
     setResult(null);
@@ -204,7 +247,8 @@ export default function ScreeningScreen() {
 
       const response = await runPrediction(
         imageUri,
-        accessToken
+        accessToken,
+        selectedPatientId,
       );
 
       setResult(response);
@@ -350,6 +394,78 @@ export default function ScreeningScreen() {
                 {imageUri ? "IMAGE READY" : "AWAITING IMAGE"}
               </Text>
             </View>
+          </View>
+
+          {/* Patient selection */}
+          <View style={styles.patientSelectionCard}>
+            <View style={styles.patientSelectionHeader}>
+              <View>
+                <Text style={styles.patientSelectionTitle}>PATIENT</Text>
+                <Text style={styles.patientSelectionHint}>
+                  Choose the patient this screening belongs to.
+                </Text>
+              </View>
+              {selectedPatient ? (
+                <Text style={styles.patientSelectedBadge}>SELECTED</Text>
+              ) : null}
+            </View>
+
+            <TextInput
+              value={patientSearch}
+              onChangeText={setPatientSearch}
+              placeholder="Search patients by username or email"
+              placeholderTextColor="#8FA7AC"
+              style={styles.patientSearchInput}
+              autoCapitalize="none"
+              editable={!loading}
+            />
+
+            {selectedPatient ? (
+              <View style={styles.selectedPatientRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.selectedPatientName}>{selectedPatient.username}</Text>
+                  <Text style={styles.selectedPatientEmail}>{selectedPatient.email || "No email provided"}</Text>
+                </View>
+                <Pressable
+                  onPress={() => setSelectedPatientId(null)}
+                  disabled={loading}
+                  style={styles.clearPatientButton}
+                >
+                  <Text style={styles.clearPatientButtonText}>Change</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={styles.patientResults}>
+                {patientsLoading ? (
+                  <Text style={styles.patientListMessage}>Loading patients…</Text>
+                ) : patientsError ? (
+                  <Text style={styles.patientListError}>{patientsError}</Text>
+                ) : filteredPatients.length === 0 ? (
+                  <Text style={styles.patientListMessage}>
+                    {patients.length === 0 ? "No patient accounts are available yet." : "No patients match your search."}
+                  </Text>
+                ) : (
+                  filteredPatients.slice(0, 8).map((patient) => (
+                    <Pressable
+                      key={patient.id}
+                      onPress={() => {
+                        setSelectedPatientId(patient.id);
+                        setPatientSearch("");
+                        setResult(null);
+                      }}
+                      style={({ pressed }) => [styles.patientOption, pressed && styles.patientOptionPressed]}
+                      disabled={loading}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.patientOptionName}>{patient.username}</Text>
+                        <Text style={styles.patientOptionEmail}>{patient.email || "No email provided"}</Text>
+                      </View>
+                      <Text style={styles.patientOptionAction}>SELECT</Text>
+                    </Pressable>
+                  ))
+                )}
+              </View>
+            )}
           </View>
 
           {/* Case information */}
@@ -508,7 +624,7 @@ export default function ScreeningScreen() {
                   <AppButton
                     title="Run retinal screening"
                     onPress={analyze}
-                    disabled={loading}
+                    disabled={loading || !selectedPatientId}
                   />
 
                   <AppButton
@@ -768,7 +884,7 @@ export default function ScreeningScreen() {
                     </Text>
 
                     <Text style={styles.resultMeta}>
-                      {sessionId} · {eye} eye
+                      Record #{(result as PredictionResult).screeningRecordId} · {selectedPatient?.username ?? "Patient"} · {eye} eye
                     </Text>
                   </View>
 
