@@ -15,6 +15,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from strawberry.file_uploads import Upload
 from PIL import Image, UnidentifiedImageError
+from django.utils import timezone
 
 from diagnosis.inference import get_model
 from diagnosis.models import ScreeningRecord
@@ -76,6 +77,17 @@ class ScreeningRecordType:
     confidence: float
     all_probabilities: List[ClassProbability]
     created_at: datetime
+    clinical_assessment: str
+    follow_up_required: bool
+    reviewed_by_username: Optional[str]
+    reviewed_at: Optional[datetime]
+    is_reviewed: bool
+
+@strawberry.type
+class ScreeningReviewPayload:
+    success: bool
+    message: str
+    record: Optional[ScreeningRecordType] = None
 
 @strawberry.type
 class PredictionResult:
@@ -124,6 +136,29 @@ def authenticated_user(info: Info):
 
     return user
 
+def to_screening_record_type(record: ScreeningRecord) -> ScreeningRecordType:
+    return ScreeningRecordType(
+        id=strawberry.ID(str(record.pk)),
+        patient_username=record.patient.username,
+        clinician_username=record.clinician.username,
+        predicted_class=record.predicted_class,
+        confidence=record.confidence,
+        all_probabilities=[
+            ClassProbability(
+                label=label,
+                probability=float(probability),
+            )
+            for label, probability in (record.all_probabilities or {}).items()
+        ],
+        created_at=record.created_at,
+        clinical_assessment=record.clinical_assessment,
+        follow_up_required=record.follow_up_required,
+        reviewed_by_username=(
+            record.reviewed_by.username if record.reviewed_by else None
+        ),
+        reviewed_at=record.reviewed_at,
+        is_reviewed=record.is_reviewed,
+    )
 
 @strawberry.type
 class Query:
@@ -180,26 +215,9 @@ class Query:
             return []
 
         return [
-            ScreeningRecordType(
-                id=strawberry.ID(str(record.pk)),
-                patient_username=record.patient.username,
-                clinician_username=record.clinician.username,
-                predicted_class=record.predicted_class,
-                confidence=record.confidence,
-                all_probabilities=[
-                    ClassProbability(
-                        label=label,
-                        probability=float(probability),
-                    )
-                    for label, probability in (
-                        record.all_probabilities or {}
-                    ).items()
-                ],
-                created_at=record.created_at,
-            )
+            to_screening_record_type(record)
             for record in records.order_by("-created_at")
         ]
-
 
 @strawberry.type
 class Mutation:
@@ -333,7 +351,92 @@ class Mutation:
             user=to_user_type(clinician),
         )
 
-    
+    @strawberry.mutation
+    def review_screening(
+        self,
+        info: Info,
+        record_id: strawberry.ID,
+        clinical_assessment: str,
+        follow_up_required: bool = False,
+    ) -> ScreeningReviewPayload:
+        clinician = authenticated_user(info)
+
+        if clinician is None:
+            return ScreeningReviewPayload(
+                success=False,
+                message="Authentication required.",
+            )
+
+        if clinician.role != User.Role.CLINICIAN:
+            return ScreeningReviewPayload(
+                success=False,
+                message="Only clinicians can review screening records.",
+            )
+
+        assessment = clinical_assessment.strip()
+
+        if not assessment:
+            return ScreeningReviewPayload(
+                success=False,
+                message="A clinical assessment is required.",
+            )
+
+        try:
+            record_pk = int(record_id)
+        except (TypeError, ValueError):
+            return ScreeningReviewPayload(
+                success=False,
+                message="Invalid screening record ID.",
+            )
+
+        with transaction.atomic():
+            try:
+                record = (
+                    ScreeningRecord.objects
+                    .select_for_update()
+                    .select_related("patient", "clinician", "reviewed_by")
+                    .get(pk=record_pk)
+                )
+            except ScreeningRecord.DoesNotExist:
+                return ScreeningReviewPayload(
+                    success=False,
+                    message="Screening record not found.",
+                )
+
+            if record.clinician_id != clinician.pk:
+                return ScreeningReviewPayload(
+                    success=False,
+                    message="You can only review screenings you performed.",
+                )
+
+            if record.is_reviewed:
+                return ScreeningReviewPayload(
+                    success=False,
+                    message="This screening has already been reviewed.",
+                )
+
+            record.clinical_assessment = assessment
+            record.follow_up_required = follow_up_required
+            record.reviewed_by = clinician
+            record.reviewed_at = timezone.now()
+
+            record.save(
+                update_fields=[
+                    "clinical_assessment",
+                    "follow_up_required",
+                    "reviewed_by",
+                    "reviewed_at",
+                ]
+            )
+
+        record.refresh_from_db()
+
+        return ScreeningReviewPayload(
+            success=True,
+            message="Clinical review saved successfully.",
+            record=to_screening_record_type(record),
+        )
+
     @strawberry.mutation
     def login(
         self,
