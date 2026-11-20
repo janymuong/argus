@@ -234,4 +234,138 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: spacing.md,
     },
+    reviewStatus: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        paddingTop: spacing.md,
+    },
+
+    reviewStatusLabel: {
+        color: colors.textSecondary,
+        fontSize: 10,
+        fontWeight: "700",
+        letterSpacing: 1,
+    },
+
+    reviewStatusValue: {
+        fontSize: 12,
+        fontWeight: "700",
+    },
+
+    reviewedText: {
+        color: colors.success,
+    },
+
+    pendingText: {
+        color: colors.accent,
+    },
+
+    reviewPanel: {
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radii.md,
+        padding: spacing.lg,
+        gap: spacing.md,
+    },
+
+    reviewPanelTitle: {
+        color: colors.primary,
+        fontSize: 11,
+        fontWeight: "700",
+        letterSpacing: 1,
+    },
+
+    assessmentText: {
+        color: colors.textPrimary,
+        fontSize: 14,
+        lineHeight: 21,
+    },
+
+    reviewMeta: {
+        color: colors.textSecondary,
+        fontSize: 11,
+    },
+
+    followUpText: {
+        color: colors.textPrimary,
+        fontSize: 12,
+        fontWeight: "600",
+    },
+
+    inputLabel: {
+        color: colors.textSecondary,
+        fontSize: 12,
+        fontWeight: "600",
+    },
+
+    assessmentInput: {
+        minHeight: 120,
+        backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: radii.md,
+        padding: spacing.md,
+        color: colors.textPrimary,
+        fontSize: 14,
+        lineHeight: 21,
+    },
+
+    followUpToggle: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: spacing.sm,
+    },
+
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: radii.sm,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    checkboxSelected: {
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
+    },
+
+    checkboxTick: {
+        color: colors.textOnPrimary,
+        fontWeight: "700",
+        fontSize: 13,
+    },
+
+    followUpLabel: {
+        color: colors.textPrimary,
+        fontSize: 13,
+    },
+
+    reviewMessage: {
+        color: colors.accent,
+        fontSize: 12,
+        lineHeight: 18,
+    },
+
+    submitReviewButton: {
+        backgroundColor: colors.primary,
+        borderRadius: radii.md,
+        padding: spacing.md,
+        alignItems: "center",
+    },
+
+    submitReviewText: {
+        color: colors.textOnPrimary,
+        fontSize: 13,
+        fontWeight: "700",
+    },
+
+    disabledButton: {
+        opacity: 0.6,
+    },
 });
