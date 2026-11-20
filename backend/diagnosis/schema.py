@@ -394,9 +394,14 @@ class Mutation:
                 record = (
                     ScreeningRecord.objects
                     .select_for_update()
-                    .select_related("patient", "clinician", "reviewed_by")
-                    .get(pk=record_pk)
+                    .get(pk=int(record_id))
                 )
+                # retrieve the record again to ensure we have the latest state after locking it.
+                # record = (
+                #     ScreeningRecord.objects
+                #     .select_related("patient", "clinician", "reviewed_by")
+                #     .get(pk=record.pk)
+                # )
             except ScreeningRecord.DoesNotExist:
                 return ScreeningReviewPayload(
                     success=False,
