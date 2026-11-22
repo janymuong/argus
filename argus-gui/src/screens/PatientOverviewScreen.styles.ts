@@ -1,54 +1,47 @@
-import { StyleSheet } from "react-native";
-import { colors, radii, spacing } from "../theme/tokens";
 
-export default StyleSheet.create({
+import { StyleSheet } from "react-native";
+import { colors, spacing, radii } from "../theme/tokens";
+
+const styles = StyleSheet.create({
     page: {
         flex: 1,
         backgroundColor: colors.background,
     },
-
     content: {
+        padding: spacing.xl,
         paddingBottom: spacing.xl,
     },
-
     shell: {
         width: "100%",
-        maxWidth: 920,
+        maxWidth: 1100,
         alignSelf: "center",
-        paddingHorizontal: spacing.xl,
-        paddingTop: spacing.xl,
     },
 
-    /* Welcome */
-
+    // Welcome
     welcome: {
         marginBottom: spacing.xl,
     },
-
     eyebrow: {
         color: colors.primary,
         fontSize: 10,
-        fontWeight: "700",
+        fontWeight: "800",
         letterSpacing: 1.2,
-        marginBottom: spacing.xs,
     },
-
     title: {
         color: colors.textPrimary,
-        fontSize: 30,
-        fontWeight: "600",
-        marginBottom: spacing.sm,
+        fontSize: 28,
+        fontWeight: "700",
+        marginTop: spacing.xs,
     },
-
     subtitle: {
         color: colors.textSecondary,
-        fontSize: 14,
-        lineHeight: 21,
-        maxWidth: 680,
+        fontSize: 13,
+        lineHeight: 20,
+        marginTop: spacing.sm,
+        maxWidth: 720,
     },
 
-    /* Screening status */
-
+    // Latest screening
     screeningCard: {
         backgroundColor: colors.surface,
         borderWidth: 1,
@@ -57,103 +50,95 @@ export default StyleSheet.create({
         padding: spacing.lg,
         marginBottom: spacing.xl,
     },
-
-    screeningTop: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-        gap: spacing.md,
-    },
-
-    screeningHeading: {
-        flex: 1,
-    },
-
     cardEyebrow: {
         color: colors.textSecondary,
         fontSize: 9,
         fontWeight: "700",
-        letterSpacing: 1.1,
-        marginBottom: spacing.xs,
+        letterSpacing: 1,
     },
-
     screeningTitle: {
         color: colors.textPrimary,
-        fontSize: 22,
-        fontWeight: "600",
-    },
-
-    statusBadge: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: radii.pill,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: 5,
-        marginTop: 1,
-    },
-
-    statusDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: colors.textSecondary,
-        marginRight: 6,
-    },
-
-    statusText: {
-        color: colors.textSecondary,
-        fontSize: 9,
+        fontSize: 20,
         fontWeight: "700",
-        letterSpacing: 0.8,
+        marginTop: spacing.xs,
     },
-
+    confidenceText: {
+        color: colors.success,
+        fontSize: 14,
+        fontWeight: "700",
+        marginTop: spacing.sm,
+    },
     screeningCopy: {
         color: colors.textSecondary,
         fontSize: 13,
         lineHeight: 20,
         marginTop: spacing.md,
-        maxWidth: 760,
     },
-
     screeningFooter: {
-        flexDirection: "row",
-        alignItems: "center",
         borderTopWidth: 1,
         borderTopColor: colors.border,
         marginTop: spacing.lg,
         paddingTop: spacing.md,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: spacing.sm,
     },
-
     footerDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
+        width: 7,
+        height: 7,
+        borderRadius: 4,
         backgroundColor: colors.primary,
-        marginRight: spacing.sm,
     },
-
     footerText: {
         color: colors.textSecondary,
-        fontSize: 11,
+        fontSize: 12,
+        flex: 1,
+    },
+    reviewPanel: {
+        marginTop: spacing.lg,
+        padding: spacing.md,
+        borderRadius: radii.md,
+        backgroundColor: colors.surfaceMuted,
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    reviewStatus: {
+        fontSize: 13,
+        fontWeight: "700",
+        marginTop: spacing.sm,
+    },
+    reviewStatusDone: {
+        color: colors.success,
+    },
+    reviewStatusPending: {
+        color: colors.accent,
+    },
+    assessmentText: {
+        color: colors.textPrimary,
+        fontSize: 13,
+        lineHeight: 20,
+        marginTop: spacing.md,
+    },
+    reviewDetail: {
+        color: colors.textSecondary,
+        fontSize: 12,
+        lineHeight: 18,
+        marginTop: spacing.md,
     },
 
-    /* Sections */
-
+    // Sections
     section: {
         marginBottom: spacing.xl,
     },
-
     sectionTitle: {
         color: colors.textPrimary,
         fontSize: 20,
-        fontWeight: "600",
+        fontWeight: "700",
+        marginTop: spacing.xs,
         marginBottom: spacing.md,
     },
 
-    /* Screening process */
-
+    // Screening process
     processCard: {
         backgroundColor: colors.surface,
         borderWidth: 1,
@@ -161,129 +146,120 @@ export default StyleSheet.create({
         borderRadius: radii.lg,
         padding: spacing.lg,
     },
-
     processStep: {
         flexDirection: "row",
         alignItems: "flex-start",
+        gap: spacing.md,
     },
-
     stepNumber: {
-        width: 34,
-        height: 34,
-        borderRadius: 17,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: colors.surfaceMuted,
         borderWidth: 1,
         borderColor: colors.border,
-        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
-        marginRight: spacing.md,
     },
-
     stepNumberText: {
         color: colors.primary,
         fontSize: 10,
-        fontWeight: "700",
-        letterSpacing: 0.5,
+        fontWeight: "800",
     },
-
     stepContent: {
         flex: 1,
         paddingTop: 2,
     },
-
     stepTitle: {
         color: colors.textPrimary,
         fontSize: 13,
-        fontWeight: "600",
-        marginBottom: 3,
+        fontWeight: "700",
     },
-
     stepText: {
         color: colors.textSecondary,
         fontSize: 11,
         lineHeight: 17,
-        maxWidth: 700,
+        marginTop: spacing.xs,
     },
-
     stepConnector: {
-        height: 18,
         width: 1,
+        height: 18,
         backgroundColor: colors.border,
-        marginLeft: 17,
-        marginVertical: 4,
+        marginLeft: 18,
+        marginVertical: spacing.xs,
     },
 
-    /* About */
-
+    // About Argus
     aboutCard: {
-        flexDirection: "row",
-        alignItems: "flex-start",
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
         borderRadius: radii.lg,
         padding: spacing.lg,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: spacing.md,
     },
-
     aboutIcon: {
         width: 36,
         height: 36,
         borderRadius: 18,
+        backgroundColor: colors.surfaceMuted,
         borderWidth: 1,
         borderColor: colors.border,
-        backgroundColor: colors.surfaceMuted,
         alignItems: "center",
         justifyContent: "center",
-        marginRight: spacing.md,
     },
-
     aboutIconText: {
         color: colors.primary,
-        fontSize: 14,
-        fontWeight: "700",
+        fontSize: 13,
+        fontWeight: "800",
     },
-
     aboutContent: {
         flex: 1,
     },
-
     aboutTitle: {
         color: colors.textPrimary,
         fontSize: 13,
-        fontWeight: "600",
-        marginBottom: 4,
+        fontWeight: "700",
     },
-
     aboutText: {
         color: colors.textSecondary,
         fontSize: 11,
-        lineHeight: 18,
-        maxWidth: 740,
-    },
-
-    /* Disclaimer */
-
-    disclaimer: {
-        flexDirection: "row",
-        alignItems: "flex-start",
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.sm,
+        lineHeight: 17,
         marginTop: spacing.xs,
     },
 
+    // Disclaimer
+    disclaimer: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: spacing.sm,
+        padding: spacing.md,
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radii.md,
+        marginBottom: spacing.lg,
+    },
     disclaimerIndicator: {
-        width: 5,
-        height: 5,
+        width: 6,
+        height: 6,
         borderRadius: 3,
         backgroundColor: colors.accent,
         marginTop: 5,
-        marginRight: spacing.sm,
     },
-
     disclaimerText: {
         flex: 1,
         color: colors.textSecondary,
         fontSize: 10,
         lineHeight: 16,
     },
+    loadingState: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: spacing.xl,
+        gap: spacing.md,
+    },
 });
+
+
+export default styles;

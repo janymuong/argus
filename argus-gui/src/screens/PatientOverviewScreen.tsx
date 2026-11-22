@@ -8,9 +8,12 @@ import {
 } from "react-native";
 
 import { useAuth } from "../context/AuthContext";
-import { fetchScreeningHistory, ScreeningHistoryRecord } from "../graphql/history";
+import {
+    fetchScreeningHistory,
+    ScreeningHistoryRecord,
+} from "../graphql/history";
+
 import styles from "./PatientOverviewScreen.styles";
-import { colors, spacing, radii } from "../theme/tokens";
 
 export default function PatientOverviewScreen() {
     const { user, accessToken } = useAuth();
@@ -64,41 +67,31 @@ export default function PatientOverviewScreen() {
 
         const date = new Date(value);
 
-        if (Number.isNaN(date.getTime())) return value;
-
-        return date.toLocaleString();
+        return Number.isNaN(date.getTime())
+            ? value
+            : date.toLocaleString();
     };
 
-    const percent = (value: number) => `${(value * 100).toFixed(1)}%`;
+    const percent = (value: number) =>
+        `${(value * 100).toFixed(1)}%`;
 
-    const cardStyle = {
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-        borderWidth: 1,
-        borderRadius: radii.lg,
-        padding: spacing.lg,
-        marginBottom: spacing.lg,
-    };
-
-    const headingStyle = {
-        color: colors.textPrimary,
-        fontSize: 18,
-        fontWeight: "700" as const,
-        marginTop: spacing.xs,
-    };
-
-    const labelStyle = {
-        color: colors.textSecondary,
-        fontSize: 10,
-        fontWeight: "700" as const,
-        letterSpacing: 1,
-    };
-
-    const bodyStyle = {
-        color: colors.textSecondary,
-        fontSize: 13,
-        lineHeight: 20,
-    };
+    const screeningSteps = [
+        {
+            number: "01",
+            title: "Image captured",
+            text: "Your clinician captures a retinal image during your visit.",
+        },
+        {
+            number: "02",
+            title: "Argus analyzes",
+            text: "Argus analyzes the image and provides decision-support information to your clinician.",
+        },
+        {
+            number: "03",
+            title: "Clinician reviews",
+            text: "Your clinician considers the result alongside your examination and other clinical information.",
+        },
+    ];
 
     return (
         <ScrollView
@@ -110,7 +103,9 @@ export default function PatientOverviewScreen() {
                 {/* Welcome */}
                 <View style={styles.welcome}>
                     <Text style={styles.eyebrow}>PATIENT PORTAL</Text>
+
                     <Text style={styles.title}>Welcome, {username}</Text>
+
                     <Text style={styles.subtitle}>
                         View your retinal screening results and clinical review
                         information shared by your care team.
@@ -118,132 +113,87 @@ export default function PatientOverviewScreen() {
                 </View>
 
                 {/* Latest screening */}
-                <View style={cardStyle}>
-                    <Text style={labelStyle}>YOUR SCREENING</Text>
+                <View style={styles.screeningCard}>
+                    <Text style={styles.cardEyebrow}>YOUR SCREENING</Text>
 
                     {loading ? (
-                        <View style={{ paddingVertical: spacing.xl, alignItems: "center" }}>
-                            <ActivityIndicator color={colors.primary} />
-                            <Text style={[bodyStyle, { marginTop: spacing.md }]}>
+                        <View style={styles.loadingState}>
+                            <ActivityIndicator />
+                            <Text style={styles.screeningCopy}>
                                 Loading your screening information...
                             </Text>
                         </View>
                     ) : error ? (
                         <>
-                            <Text style={headingStyle}>Unable to load screening</Text>
-                            <Text style={[bodyStyle, { marginTop: spacing.md }]}>
-                                {error}
+                            <Text style={styles.screeningTitle}>
+                                Unable to load screening
                             </Text>
+                            <Text style={styles.screeningCopy}>{error}</Text>
                         </>
                     ) : !latest ? (
                         <>
-                            <Text style={headingStyle}>No screening yet</Text>
-                            <Text style={[bodyStyle, { marginTop: spacing.md }]}>
-                                Your clinician will complete your retinal screening
-                                during your clinical visit. Once a result is available,
-                                it will appear here.
+                            <Text style={styles.screeningTitle}>
+                                No screening yet
                             </Text>
 
-                            <View
-                                style={{
-                                    borderTopWidth: 1,
-                                    borderTopColor: colors.border,
-                                    marginTop: spacing.lg,
-                                    paddingTop: spacing.md,
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: spacing.sm,
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        width: 7,
-                                        height: 7,
-                                        borderRadius: 4,
-                                        backgroundColor: colors.primary,
-                                    }}
-                                />
-                                <Text style={bodyStyle}>
+                            <Text style={styles.screeningCopy}>
+                                Your clinician will complete your retinal screening
+                                during your clinical visit. Once a result is
+                                available, it will appear here.
+                            </Text>
+
+                            <View style={styles.screeningFooter}>
+                                <View style={styles.footerDot} />
+                                <Text style={styles.footerText}>
                                     Your clinical team will guide you through the next step.
                                 </Text>
                             </View>
                         </>
                     ) : (
                         <>
-                            <Text style={headingStyle}>{latest.predictedClass}</Text>
+                            <Text style={styles.screeningTitle}>
+                                {latest.predictedClass}
+                            </Text>
 
-                            <Text
-                                style={{
-                                    color: colors.success,
-                                    fontSize: 14,
-                                    fontWeight: "700",
-                                    marginTop: spacing.sm,
-                                }}
-                            >
+                            <Text style={styles.confidenceText}>
                                 Model confidence: {percent(latest.confidence)}
                             </Text>
 
-                            <Text style={[bodyStyle, { marginTop: spacing.md }]}>
+                            <Text style={styles.screeningCopy}>
                                 Screening date: {formatDate(latest.createdAt)}
                             </Text>
 
-                            <View
-                                style={{
-                                    marginTop: spacing.lg,
-                                    padding: spacing.md,
-                                    borderRadius: radii.md,
-                                    backgroundColor: colors.surfaceMuted,
-                                    borderWidth: 1,
-                                    borderColor: colors.border,
-                                }}
-                            >
-                                <Text style={labelStyle}>CLINICAL REVIEW</Text>
+                            <View style={styles.reviewPanel}>
+                                <Text style={styles.cardEyebrow}>CLINICAL REVIEW</Text>
 
                                 <Text
-                                    style={{
-                                        marginTop: spacing.sm,
-                                        fontWeight: "700",
-                                        color: latest.isReviewed
-                                            ? colors.success
-                                            : colors.accent,
-                                    }}
+                                    style={[
+                                        styles.reviewStatus,
+                                        latest.isReviewed
+                                            ? styles.reviewStatusDone
+                                            : styles.reviewStatusPending,
+                                    ]}
                                 >
                                     {latest.isReviewed
                                         ? "Reviewed by your clinician"
                                         : "Awaiting clinician review"}
                                 </Text>
 
-                                {latest.isReviewed && latest.clinicalAssessment ? (
-                                    <Text
-                                        style={[
-                                            bodyStyle,
-                                            {
-                                                marginTop: spacing.md,
-                                                color: colors.textPrimary,
-                                            },
-                                        ]}
-                                    >
-                                        {latest.clinicalAssessment}
-                                    </Text>
-                                ) : latest.isReviewed ? (
-                                    <Text style={[bodyStyle, { marginTop: spacing.md }]}>
-                                        Your clinician has completed the review.
+                                {latest.isReviewed ? (
+                                    <Text style={styles.assessmentText}>
+                                        {latest.clinicalAssessment ||
+                                            "Your clinician has completed the review."}
                                     </Text>
                                 ) : (
-                                    <Text style={[bodyStyle, { marginTop: spacing.md }]}>
-                                        Your clinician's assessment will appear here once
-                                        the review is complete.
+                                    <Text style={styles.reviewDetail}>
+                                        Your clinician's assessment will appear
+                                        here once the review is complete.
                                     </Text>
                                 )}
 
                                 {latest.isReviewed && (
                                     <>
-                                        <Text
-                                            style={[
-                                                bodyStyle,
-                                                { marginTop: spacing.md },
-                                            ]}
-                                        >
+                                        <Text style={styles.reviewDetail}>
                                             Follow-up:{" "}
                                             {latest.followUpRequired
                                                 ? "Recommended"
@@ -251,12 +201,7 @@ export default function PatientOverviewScreen() {
                                         </Text>
 
                                         {latest.reviewedAt && (
-                                            <Text
-                                                style={[
-                                                    bodyStyle,
-                                                    { marginTop: spacing.sm },
-                                                ]}
-                                            >
+                                            <Text style={styles.reviewDetail}>
                                                 Review date: {formatDate(latest.reviewedAt)}
                                             </Text>
                                         )}
@@ -270,26 +215,13 @@ export default function PatientOverviewScreen() {
                 {/* Screening process */}
                 <View style={styles.section}>
                     <Text style={styles.eyebrow}>YOUR SCREENING</Text>
-                    <Text style={styles.sectionTitle}>What happens during screening</Text>
+
+                    <Text style={styles.sectionTitle}>
+                        What happens during screening
+                    </Text>
 
                     <View style={styles.processCard}>
-                        {[
-                            {
-                                number: "01",
-                                title: "Image captured",
-                                text: "Your clinician captures a retinal image during your visit.",
-                            },
-                            {
-                                number: "02",
-                                title: "Argus analyzes",
-                                text: "Argus analyzes the image and provides decision-support information to your clinician.",
-                            },
-                            {
-                                number: "03",
-                                title: "Clinician reviews",
-                                text: "Your clinician considers the result alongside your examination and other clinical information.",
-                            },
-                        ].map((step, index) => (
+                        {screeningSteps.map((step, index) => (
                             <View key={step.number}>
                                 <View style={styles.processStep}>
                                     <View style={styles.stepNumber}>
@@ -299,12 +231,19 @@ export default function PatientOverviewScreen() {
                                     </View>
 
                                     <View style={styles.stepContent}>
-                                        <Text style={styles.stepTitle}>{step.title}</Text>
-                                        <Text style={styles.stepText}>{step.text}</Text>
+                                        <Text style={styles.stepTitle}>
+                                            {step.title}
+                                        </Text>
+
+                                        <Text style={styles.stepText}>
+                                            {step.text}
+                                        </Text>
                                     </View>
                                 </View>
 
-                                {index < 2 && <View style={styles.stepConnector} />}
+                                {index < screeningSteps.length - 1 && (
+                                    <View style={styles.stepConnector} />
+                                )}
                             </View>
                         ))}
                     </View>
@@ -313,7 +252,10 @@ export default function PatientOverviewScreen() {
                 {/* About Argus */}
                 <View style={styles.section}>
                     <Text style={styles.eyebrow}>ABOUT ARGUS</Text>
-                    <Text style={styles.sectionTitle}>Supporting your care team</Text>
+
+                    <Text style={styles.sectionTitle}>
+                        Supporting your care team
+                    </Text>
 
                     <View style={styles.aboutCard}>
                         <View style={styles.aboutIcon}>
@@ -321,12 +263,15 @@ export default function PatientOverviewScreen() {
                         </View>
 
                         <View style={styles.aboutContent}>
-                            <Text style={styles.aboutTitle}>Clinical decision support</Text>
+                            <Text style={styles.aboutTitle}>
+                                Clinical decision support
+                            </Text>
+
                             <Text style={styles.aboutText}>
-                                Argus helps clinicians analyze retinal images and provides
-                                information to support their assessment. Your clinician
-                                remains responsible for interpreting the result and
-                                discussing it with you.
+                                Argus helps clinicians analyze retinal images and
+                                provides information to support their assessment.
+                                Your clinician remains responsible for interpreting
+                                the result and discussing it with you.
                             </Text>
                         </View>
                     </View>
@@ -335,10 +280,11 @@ export default function PatientOverviewScreen() {
                 {/* Disclaimer */}
                 <View style={styles.disclaimer}>
                     <View style={styles.disclaimerIndicator} />
+
                     <Text style={styles.disclaimerText}>
-                        Argus provides decision-support information only. It is not a
-                        standalone diagnosis and does not replace professional clinical
-                        judgment.
+                        Argus provides decision-support information only. It is
+                        not a standalone diagnosis and does not replace
+                        professional clinical judgment.
                     </Text>
                 </View>
             </View>
