@@ -269,13 +269,19 @@ function ClinicianSidebar({
  * ---------------------------------------------------------
  */
 
+
 function PatientSidebar({
+  activeSection,
   onHomePress,
+  onHistoryPress,
   onSignOut,
 }: {
+  activeSection: "Home" | "History";
   onHomePress: () => void;
+  onHistoryPress: () => void;
   onSignOut: () => void;
 }) {
+
   return (
     <View style={styles.sidebar}>
       <BrandBlock patient />
@@ -287,18 +293,23 @@ function PatientSidebar({
           MY PORTAL
         </Text>
 
+
         <SidebarItem
           label="Overview"
           icon="⌂"
-          active
+          active={activeSection === "Home"}
           onPress={onHomePress}
         />
+
+
 
         <SidebarItem
           label="Screening history"
           icon="◷"
-          disabled
+          active={activeSection === "History"}
+          onPress={onHistoryPress}
         />
+
       </View>
 
       <View style={styles.navigationSection}>
@@ -374,17 +385,22 @@ function TopBar({
   role: string;
   patient?: boolean;
   activeSection?: "Home" | "Screening" | "History";
+
 }) {
   const initial =
     username?.charAt(0).toUpperCase() || "U";
 
+
   const pageTitle = patient
-    ? "Overview"
+    ? activeSection === "History"
+      ? "Screening history"
+      : "Overview"
     : activeSection === "Screening"
       ? "Retinal screening"
       : activeSection === "History"
         ? "Screening history"
         : "Overview";
+
 
   return (
     <View style={styles.topBar}>
@@ -506,6 +522,7 @@ function ClinicianShell({
  * ---------------------------------------------------------
  */
 
+
 function PatientShell({
   user,
   logout,
@@ -513,10 +530,23 @@ function PatientShell({
   user: any;
   logout: () => Promise<void>;
 }) {
+  const [activeSection, setActiveSection] =
+    useState<"Home" | "History">("Home");
+
+  const goHome = () => {
+    setActiveSection("Home");
+  };
+
+  const goHistory = () => {
+    setActiveSection("History");
+  };
+
   return (
     <View style={styles.appShell}>
       <PatientSidebar
-        onHomePress={() => { }}
+        activeSection={activeSection}
+        onHomePress={goHome}
+        onHistoryPress={goHistory}
         onSignOut={() => void logout()}
       />
 
@@ -525,15 +555,21 @@ function PatientShell({
           username={user.username}
           role={user.role}
           patient
+          activeSection={activeSection}
         />
 
         <View style={styles.contentArea}>
-          <PatientOverviewScreen />
+          {activeSection === "History" ? (
+            <ScreeningHistoryScreen />
+          ) : (
+            <PatientOverviewScreen />
+          )}
         </View>
       </View>
     </View>
   );
 }
+
 
 /*
  * ---------------------------------------------------------
