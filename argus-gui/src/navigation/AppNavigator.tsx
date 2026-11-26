@@ -504,7 +504,7 @@ function ClinicianShell({
           ) : activeSection === "History" ? (
             <ScreeningHistoryScreen />
           ) : (
-            <OverviewScreen onOpenScreening={goScreening} />
+            <OverviewScreen onOpenScreening={goScreening} onOpenHistory={goHistory} />
           )}
         </View>
       </View>
