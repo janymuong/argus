@@ -57,8 +57,8 @@ export type PatientOption = {
 };
 
 const PATIENTS_QUERY = `
-  query Patients {
-    patients {
+  query Patients($search: String) {
+    patients(search: $search) {
       id
       username
       email
@@ -67,7 +67,10 @@ const PATIENTS_QUERY = `
   }
 `;
 
-export async function fetchPatients(accessToken: string): Promise<PatientOption[]> {
+export async function fetchPatients(
+  accessToken: string,
+  search = "",
+): Promise<PatientOption[]> {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -75,7 +78,10 @@ export async function fetchPatients(accessToken: string): Promise<PatientOption[
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ query: PATIENTS_QUERY }),
+    body: JSON.stringify({
+      query: PATIENTS_QUERY,
+      variables: { search: search.trim() || null },
+    }),
   });
 
   const json = await response.json();
