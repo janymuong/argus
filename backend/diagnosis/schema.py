@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Q
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from strawberry.file_uploads import Upload
@@ -82,6 +83,14 @@ class ScreeningRecordType:
     reviewed_by_username: Optional[str]
     reviewed_at: Optional[datetime]
     is_reviewed: bool
+
+@strawberry.type
+class PatientProfileType:
+    id: strawberry.ID
+    username: str
+    email: str
+    screening_records: List[ScreeningRecordType]
+
 
 @strawberry.type
 class ScreeningReviewPayload:
@@ -172,19 +181,71 @@ class Query:
         return to_user_type(user) if user else None
 
     @strawberry.field
-    def patients(self, info: Info) -> List[UserType]:
-        """List active patient accounts for an authenticated clinician."""
+    def patients(
+        self,
+        info: Info,
+        search: Optional[str] = None,
+    ) -> List[UserType]:
+        """List active patient accounts for clinicians, optionally by username/email."""
         user = authenticated_user(info)
         if user is None or user.role != User.Role.CLINICIAN:
             return []
 
+        patients = User.objects.filter(
+            role=User.Role.PATIENT,
+            is_active=True,
+        )
+
+        term = (search or "").strip()
+        if term:
+            patients = patients.filter(
+                Q(username__icontains=term) | Q(email__icontains=term)
+            )
+
         return [
             to_user_type(patient)
-            for patient in User.objects.filter(
+            for patient in patients.order_by("username")[:100]
+        ]
+
+    @strawberry.field
+    def patient_detail(
+        self,
+        info: Info,
+        patient_id: strawberry.ID,
+    ) -> Optional[PatientProfileType]:
+        """Return a patient profile and only screenings performed by this clinician."""
+        clinician = authenticated_user(info)
+        if clinician is None or clinician.role != User.Role.CLINICIAN:
+            return None
+
+
+        try:
+            patient = User.objects.get(
+                pk=int(patient_id),
                 role=User.Role.PATIENT,
                 is_active=True,
-            ).order_by("username")
-        ]
+            )
+        except (User.DoesNotExist, TypeError, ValueError):
+            return None
+
+
+
+        records = (
+            ScreeningRecord.objects.select_related(
+                "patient", "clinician", "reviewed_by"
+            )
+            .filter(patient=patient, clinician=clinician)
+            .order_by("-created_at")
+        )
+
+        return PatientProfileType(
+            id=strawberry.ID(str(patient.pk)),
+            username=patient.username,
+            email=patient.email,
+            screening_records=[
+                to_screening_record_type(record) for record in records
+            ],
+        )
 
     @strawberry.field
     def screening_history(self, info: Info,) -> List[ScreeningRecordType]:
